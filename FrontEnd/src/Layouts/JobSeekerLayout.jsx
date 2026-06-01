@@ -1,5 +1,5 @@
-import JobSeekerSidebar from "../jobseeker/JobSeekerSidebar.jsx";
-import JobSeekerNavbar from "../jobseeker/JobSeekerNavbar.jsx";
+import JobSeekerSidebar from "../JobSeeker/JobSeekerSidebar.jsx";
+import JobSeekerNavbar from "../JobSeeker/JobSeekerNavbar.jsx";
 
 const JobSeekerLayout = ({ sidebarOpen, toggleSidebar, children }) => (
   <div className="flex h-screen bg-gray-100">
