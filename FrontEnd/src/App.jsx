@@ -14,7 +14,7 @@ import JobSeekerLayout from "./Layouts/JobSeekerLayout.jsx";
 import Home from "./pages/Home.jsx";
 import Services from "./pages/Services.jsx";
 import Enquiry from "./pages/Enquiry.jsx";
-import ImageGallery from "./pages/ImageGallery.jsx";
+import ImageGallery from "./pages/Imagegallery.jsx";
 import ViewJob from "./pages/ViewJob.jsx";
 
 // Auth Pages
