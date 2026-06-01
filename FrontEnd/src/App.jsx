@@ -15,7 +15,7 @@ import Home from "./pages/Home.jsx";
 import Services from "./pages/Services.jsx";
 import Enquiry from "./pages/Enquiry.jsx";
 import ImageGallery from "./pages/Imagegallery.jsx";
-import ViewJob from "./pages/ViewJob.jsx";
+import ViewJob from "./pages/Viewjob.jsx";
 
 // Auth Pages
 import Login from "./pages/Login.jsx";
