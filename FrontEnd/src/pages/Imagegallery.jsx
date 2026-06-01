@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 function ImageGallery() {
   const [selectedImg, setSelectedImg] = useState(null);
 
