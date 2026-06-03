@@ -27,6 +27,11 @@ export const sendEmail = async ({ to, subject, html }) => {
     console.log("✅ Email sent:", info.messageId);
   } catch (error) {
     console.error("❌ Email sending failed:", error.message);
+    console.log("EMAIL_HOST =", process.env.EMAIL_HOST);
+    console.log("EMAIL_PORT =", process.env.EMAIL_PORT);
+    console.log("CLIENT_URL =", process.env.CLIENT_URL);
+    console.log(error)
+    throw error
     // Non-fatal — server continues
   }
 };
