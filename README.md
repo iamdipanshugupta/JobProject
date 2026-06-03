@@ -2,7 +2,8 @@
 
 A complete **Full Stack Job Portal** built with **React.js**, **Node.js**, **Express.js**, and **MongoDB**. The platform supports three types of users — **Public visitors**, **Job Seekers**, and **Admins** — each with their own dedicated interface and features.
 
-> 🔗 **Live Demo:** [your-live-url.com](https://your-live-url.com) &nbsp;|&nbsp; 📁 **GitHub:** [github.com/your-username/job-portal](https://github.com/your-username/job-portal)
+> 🔗 **Live Demo:** https://job-project-one.vercel.app
+ 📁 **GitHub:** https://github.com/iamdipanshugupta/JobProject/tree/main
 
 ---
 
