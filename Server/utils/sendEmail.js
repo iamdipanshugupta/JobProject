@@ -3,14 +3,19 @@ import nodemailer from "nodemailer";
 export const sendEmail = async ({ to, subject, html }) => {
   try {
     const transporter = nodemailer.createTransport({
-      host:   process.env.EMAIL_HOST,
-      port:   Number(process.env.EMAIL_PORT),
+      host: process.env.EMAIL_HOST,
+      port: Number(process.env.EMAIL_PORT),
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
     });
+    await transporter.verify();
+    console.log("✅ Email transporter is ready");
+    console.log("EMAIL_HOST =", process.env.EMAIL_HOST);
+    console.log("EMAIL_PORT =", process.env.EMAIL_PORT);
+    console.log("CLIENT_URL =", process.env.CLIENT_URL);
 
     const info = await transporter.sendMail({
       from: `"Job Portal" <${process.env.EMAIL_USER}>`,
