@@ -1,7 +1,8 @@
+
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-
 import connectDatabase from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -12,7 +13,6 @@ import complainRoutes from "./routes/complain.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 
-dotenv.config();
 
 const app = express();
 

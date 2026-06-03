@@ -1,39 +1,24 @@
-import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
+
+
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendEmail = async ({ to, subject, html }) => {
   try {
-    const transporter = nodemailer.createTransport({
-      // host: process.env.EMAIL_HOST,
-      // port: Number(process.env.EMAIL_PORT),
-      service: "gmail",
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-    await transporter.verify();
-    console.log("✅ Email transporter is ready");
-    console.log("EMAIL_HOST =", process.env.EMAIL_HOST);
-    console.log("EMAIL_PORT =", process.env.EMAIL_PORT);
-    console.log("CLIENT_URL =", process.env.CLIENT_URL);
-
-    const info = await transporter.sendMail({
-      from: `"Job Portal" <${process.env.EMAIL_USER}>`,
+    const data = await resend.emails.send({
+      from: "onboarding@resend.dev",
       to,
       subject,
       html,
     });
 
-    console.log("✅ Email sent:", info.messageId);
+    console.log("✅ Email sent:", data);
   } catch (error) {
-    console.error("❌ Email sending failed:", error.message);
-    console.log("EMAIL_HOST =", process.env.EMAIL_HOST);
-    console.log("EMAIL_PORT =", process.env.EMAIL_PORT);
-    console.log("CLIENT_URL =", process.env.CLIENT_URL);
-    console.log(error)
-    throw error
-    // Non-fatal — server continues
+    console.error("❌ Email sending failed:", error);
+    throw error;
   }
 };
 
