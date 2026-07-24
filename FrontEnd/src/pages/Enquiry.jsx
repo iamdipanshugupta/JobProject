@@ -18,7 +18,7 @@ const Enquiry = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/enquiry`, form);
+      const res = await axios.post(`${API_BASE_URL}/users/enquiry`, form);
       if (res.data.success) {
         alert(res.data.message || "Enquiry sent successfully!");
         setForm({ name: "", email: "", message: "", number: "" });
