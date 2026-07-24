@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-
+import  API_BASE_URL  from "../config/api.js";
 const ApplyJob = () => {
   const navigate = useNavigate();
 
-  // ✅ State
   const [jobs, setJobs] = useState([]);
   const [jobId, setJobId] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
@@ -16,7 +15,6 @@ const ApplyJob = () => {
   // jobSeekerId state ensures it's available before submitting
   const [jobSeekerId, setJobSeekerId] = useState(undefined);
 
-  // ✅ Load jobSeekerId from localStorage on mount
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
     const storedUser = localStorage.getItem("user");
@@ -26,7 +24,7 @@ const ApplyJob = () => {
     } else if (storedUser) {
       try {
         const parsed = JSON.parse(storedUser);
-        setJobSeekerId(parsed?.id || null); // ✅ changed from _id to id
+        setJobSeekerId(parsed?.id || null); 
       } catch {
         setJobSeekerId(null);
       }
@@ -35,7 +33,7 @@ const ApplyJob = () => {
     }
   }, []);
 
-  // ✅ Redirect if not logged in
+  
   useEffect(() => {
     if (jobSeekerId === null) {
       toast.error("Please login first to apply for a job!");
@@ -43,11 +41,11 @@ const ApplyJob = () => {
     }
   }, [jobSeekerId, navigate]);
 
-  // ✅ Fetch all jobs
+  
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/jobs");
+        const res = await fetch(`${API_BASE_URL}/jobs`);
         if (!res.ok) throw new Error("Failed to fetch jobs");
         const data = await res.json();
         setJobs(data);
@@ -86,7 +84,7 @@ const ApplyJob = () => {
       formData.append("resume", selectedResume); // File object from <input type="file">
     }
 
-    const res = await fetch("http://localhost:8080/api/applications", {
+    const res = await fetch(`${API_BASE_URL}/applications`, {
       method: "POST",
       body: formData, // ✅ no JSON.stringify
     });

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
-
+import API_BASE_URL  from "../config/api.js";
 const Complain = () => {
   const [userEmail, setUserEmail] = useState(null);
   const [userStatus, setUserStatus] = useState(null);
@@ -42,10 +42,15 @@ const Complain = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/complain", {
+      const res = await fetch(`${API_BASE_URL}/complaints`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, submittedBy: userEmail }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          submittedBy: userEmail,
+        }),
       });
 
       const result = await res.json();
@@ -68,7 +73,9 @@ const Complain = () => {
     <div className="p-8 bg-white min-h-screen text-gray-900 flex justify-center items-start">
       <Toaster position="top-right" reverseOrder={false} />
       <div className="w-full max-w-lg shadow-lg rounded-lg p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center">Raise a Complaint</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          Raise a Complaint
+        </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

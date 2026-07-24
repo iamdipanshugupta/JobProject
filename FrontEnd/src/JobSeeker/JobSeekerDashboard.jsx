@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const JobSeekerDashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({ name: "Job Seeker" }); // replace with real user data if available
+  const [user] = useState({ name: "Job Seeker" }); 
 
   // Optional: fetch user info from backend
   useEffect(() => {

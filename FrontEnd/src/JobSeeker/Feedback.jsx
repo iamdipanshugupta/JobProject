@@ -1,7 +1,7 @@
 // JobSeeker/Feedback.js
 import { useState } from "react";
 import toast from "react-hot-toast";
-
+import  API_BASE_URL  from "../config/api.js";
 const Feedback = () => {
   const [message, setMessage] = useState("");
   const token = localStorage.getItem("token");
@@ -10,7 +10,7 @@ const Feedback = () => {
     if (!message.trim()) return toast.error("Please enter feedback.");
 
     try {
-      const res = await fetch("http://localhost:8080/api/feedback", {
+      const res = await fetch(`${API_BASE_URL}/feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,7 +27,7 @@ const Feedback = () => {
         toast.error(data.message);
       }
     } catch (err) {
-      toast.error("Something went wrong!");
+      toast.error("Something went wrong!" , err);
     }
   };
 

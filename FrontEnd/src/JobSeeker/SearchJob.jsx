@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState } from "react";
+import  API_BASE_URL  from "../config/api.js";
 const SearchJob = ({ jobSeekerId }) => {
   const [filters, setFilters] = useState({
     location: "",
@@ -10,16 +10,14 @@ const SearchJob = ({ jobSeekerId }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Handle input change
   const handleChange = (e) =>
     setFilters({ ...filters, [e.target.name]: e.target.value });
 
-  // ✅ Fetch jobs with filters
   const handleSearch = async () => {
     setLoading(true);
     try {
       const query = new URLSearchParams(filters).toString();
-      const res = await fetch(`http://localhost:8080/api/jobs?${query}`);
+      const res = await fetch(`${API_BASE_URL}/jobs?${query}`);
       const data = await res.json();
       setJobs(data);
     } catch (err) {
@@ -28,10 +26,9 @@ const SearchJob = ({ jobSeekerId }) => {
     setLoading(false);
   };
 
-  // ✅ Apply for a job
   const handleApply = async (jobId) => {
     try {
-      const res = await fetch("http://localhost:8080/api/applications", {
+      const res = await fetch(`${API_BASE_URL}/applications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobId, jobSeekerId }),
@@ -48,7 +45,7 @@ const SearchJob = ({ jobSeekerId }) => {
     <div className="p-6 bg-white rounded shadow text-gray-900">
       <h2 className="text-green-500 font-bold text-xl mb-4">Search Jobs</h2>
 
-      {/* ✅ Filters */}
+      {/*  Filters */}
       <div className="space-y-2 mb-4">
         <input
           name="location"
@@ -90,7 +87,7 @@ const SearchJob = ({ jobSeekerId }) => {
         </button>
       </div>
 
-      {/* ✅ Jobs List */}
+      {/*  Jobs List */}
       {jobs.length > 0 ? (
         <table className="w-full border">
           <thead>
