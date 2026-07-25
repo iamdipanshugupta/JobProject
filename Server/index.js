@@ -12,6 +12,7 @@ import resultRoutes from "./routes/result.routes.js";
 import complainRoutes from "./routes/complain.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import jobseekerRoutes from "./routes/jobseeker.routes.js";
 
 
 const app = express();
@@ -58,6 +59,7 @@ app.use("/api/results", resultRoutes);      // result management
 app.use("/api/complaints", complainRoutes); // complaints
 app.use("/api/feedback", feedbackRoutes);   // feedback
 app.use("/api/admin", adminRoutes);         // admin-specific operations
+app.use("/api/jobseekers", jobseekerRoutes); // job seeker management (admin only)
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
