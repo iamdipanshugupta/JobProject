@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api.js";
+import { getToken } from "../utils/auth.js";
 
 const Enquiries = () => {
   const [enquiries, setEnquiries] = useState([]);
+  const authHeaders = { headers: { Authorization: `Bearer ${getToken()}` } };
 
   useEffect(() => {
     fetchEnquiries();
@@ -10,7 +13,7 @@ const Enquiries = () => {
 
   const fetchEnquiries = () => {
     axios
-      .get("http://localhost:8080/api/user/enquiries")
+      .get(`${API_BASE_URL}/users/enquiries`, authHeaders)
       .then((res) => {
         if (res.data.success) {
           setEnquiries(res.data.data);
@@ -23,7 +26,7 @@ const Enquiries = () => {
     if (!window.confirm("Are you sure you want to delete this enquiry?")) return;
 
     try {
-      const res = await axios.delete(`http://localhost:8080/api/user/enquiry/${id}`);
+      const res = await axios.delete(`${API_BASE_URL}/users/enquiry/${id}`, authHeaders);
 
       if (res.data.success) {
         alert("Enquiry deleted successfully!");

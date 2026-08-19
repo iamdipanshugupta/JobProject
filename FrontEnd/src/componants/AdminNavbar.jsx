@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUserCircle, FaTimes } from "react-icons/fa";
-import { clearAuthData } from "../../utils/auth.js";
+import { clearAuthData } from "../utils/auth.js";
 
 const AdminNavbar = ({ toggleSidebar }) => {
   const [menuOpen, setMenuOpen] = useState(false);

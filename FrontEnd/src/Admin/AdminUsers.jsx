@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api.js";
+import { getToken } from "../utils/auth.js";
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -8,7 +10,9 @@ const AdminUsers = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await axios.get("http://localhost:8080/api/admin/users");
+                const res = await axios.get(`${API_BASE_URL}/admin/users`, {
+                    headers: { Authorization: `Bearer ${getToken()}` },
+                });
                 if (res.data.success) setUsers(res.data.users);
             } catch (error) {
                 console.error(error);
@@ -18,6 +22,26 @@ const AdminUsers = () => {
         };
         fetchUsers();
     }, []);
+
+    const handleDownloadResume = async (filename) => {
+        try {
+            const res = await axios.get(`${API_BASE_URL}/admin/resume/${filename}`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+                responseType: "blob",
+            });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error downloading resume:", error);
+            alert("Failed to download resume");
+        }
+    };
 
     if (loading) return <p>Loading users...</p>;
 
@@ -47,15 +71,12 @@ const AdminUsers = () => {
                             <td className="border text-gray-900 px-4 py-2">{user.skills?.join(", ")}</td>
                             <td className="border text-gray-900 px-4 py-2">
                                 {user.resumeUrl ? (
-                                    <a
-                                        href={`http://localhost:8080/api/admin/users/resume/${user.resumeUrl}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <button
+                                        onClick={() => handleDownloadResume(user.resumeUrl)}
+                                        className="text-blue-600 hover:underline"
                                     >
                                         Download
-                                    </a>
-
-
+                                    </button>
                                 ) : (
                                     "No Resume"
                                 )}

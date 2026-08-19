@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_BASE_URL from "../config/api.js";
 
 const JobSeekerManagement = () => {
   const [jobSeekers, setJobSeekers] = useState([]);
@@ -7,7 +8,7 @@ const JobSeekerManagement = () => {
   const fetchJobSeekers = async () => {
     try {
       const token = localStorage.getItem("token"); // if protected
-      const res = await fetch("http://localhost:8080/api/jobseekers", {
+      const res = await fetch(`${API_BASE_URL}/jobseekers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -25,7 +26,7 @@ const JobSeekerManagement = () => {
   const toggleStatus = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:8080/api/jobseekers/${id}/status`, {
+      const res = await fetch(`${API_BASE_URL}/jobseekers/${id}/status`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import API_BASE_URL from "../config/api.js";
 
 const ComplainManagement = () => {
   const [complains, setComplains] = useState([]);
@@ -11,7 +12,7 @@ const ComplainManagement = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:8080/api/complain");
+      const res = await fetch(`${API_BASE_URL}/complaints`);
       if (!res.ok) throw new Error("Failed to fetch complaints");
       const data = await res.json();
       setComplains(data);
@@ -29,7 +30,7 @@ const ComplainManagement = () => {
   // Mark complaint as resolved
   const handleStatusChange = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/complain/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/complaints/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "Resolved" }),
@@ -49,7 +50,7 @@ const ComplainManagement = () => {
 
     try {
       console.log("Deleting complaint ID:", id); // ✅ Debug
-      const res = await fetch(`http://localhost:8080/api/complain/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/complaints/${id}`, {
         method: "DELETE",
       });
 

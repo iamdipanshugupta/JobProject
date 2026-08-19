@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_BASE_URL from "../config/api.js";
 
 const ResultManagement = () => {
   const [result, setResult] = useState({ jobId: "", jobSeekerId: "", status: "" });
@@ -10,7 +11,7 @@ const ResultManagement = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/jobs");
+        const res = await fetch(`${API_BASE_URL}/jobs`);
         const data = await res.json();
         setJobs(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -30,7 +31,7 @@ const ResultManagement = () => {
 
     const fetchApplicants = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/applications?jobId=${result.jobId}`);
+        const res = await fetch(`${API_BASE_URL}/applications?jobId=${result.jobId}`);
         const data = await res.json();
         if (data.success && Array.isArray(data.applications)) {
           // ✅ Filter only applicants with valid jobSeekerId._id
@@ -65,7 +66,7 @@ const ResultManagement = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/api/results", {
+      const res = await fetch(`${API_BASE_URL}/results`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(result),

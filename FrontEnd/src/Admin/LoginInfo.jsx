@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import API_BASE_URL from "../config/api.js";
+import { getToken } from "../utils/auth.js";
 
 const LoginInfo = () => {
   const [users, setUsers] = useState([]);
@@ -10,10 +12,12 @@ const LoginInfo = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/api/user");
+      const res = await fetch(`${API_BASE_URL}/admin/users`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
       if (!res.ok) throw new Error("Failed to fetch users");
       const data = await res.json();
-      setUsers(data);
+      setUsers(data.users || []);
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Error fetching users");
@@ -30,16 +34,19 @@ const LoginInfo = () => {
   const handleStatusChange = async (id, newStatus) => {
     setUpdatingId(id);
     try {
-      const res = await fetch(`http://localhost:8080/api/user/${id}/status`, {
+      const res = await fetch(`${API_BASE_URL}/admin/users/${id}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
         body: JSON.stringify({ status: newStatus }),
       });
 
       if (!res.ok) throw new Error("Failed to update status");
 
-      const updatedUser = await res.json();
-      setUsers(users.map(u => (u._id === id ? updatedUser : u)));
+      const data = await res.json();
+      setUsers(users.map(u => (u._id === id ? data.user : u)));
       toast.success(`User ${newStatus}`);
     } catch (err) {
       console.error(err);

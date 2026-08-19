@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import API_BASE_URL from "../config/api.js";
 
 const ManageApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -10,7 +11,7 @@ const ManageApplications = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8080/api/applications/all", {
+      const res = await axios.get(`${API_BASE_URL}/applications/all`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -45,7 +46,7 @@ const ManageApplications = () => {
           : status.toLowerCase();
 
       const res = await axios.put(
-        `http://localhost:8080/api/applications/${id}/status`,
+        `${API_BASE_URL}/applications/${id}/status`,
         { status: backendStatus },
         {
           headers: {

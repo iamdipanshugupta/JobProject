@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import API_BASE_URL from "../config/api.js";
 
 const FeedbackManagement = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -8,7 +9,7 @@ const FeedbackManagement = () => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/feedback", {
+        const res = await fetch(`${API_BASE_URL}/feedback`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -25,7 +26,7 @@ const FeedbackManagement = () => {
     if (!window.confirm("Are you sure you want to delete this feedback?")) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/feedback/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/feedback/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

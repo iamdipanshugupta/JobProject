@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_BASE_URL from "../config/api.js";
 
 const JobsManagement = ({ token }) => {
   const [jobs, setJobs] = useState([]);
@@ -17,7 +18,7 @@ const JobsManagement = ({ token }) => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/jobs", {
+        const res = await fetch(`${API_BASE_URL}/jobs`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -36,8 +37,8 @@ const JobsManagement = ({ token }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = editingJobId
-      ? `http://localhost:8080/api/jobs/${editingJobId}`
-      : "http://localhost:8080/api/jobs";
+      ? `${API_BASE_URL}/jobs/${editingJobId}`
+      : `${API_BASE_URL}/jobs`;
     const method = editingJobId ? "PUT" : "POST";
 
     try {
@@ -68,7 +69,7 @@ const JobsManagement = ({ token }) => {
   // ✅ Delete Job
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:8080/api/jobs/${id}`, {
+      await fetch(`${API_BASE_URL}/jobs/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
