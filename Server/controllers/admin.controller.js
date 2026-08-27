@@ -1,5 +1,9 @@
 import path from "path";
+import { fileURLToPath } from "url";
 import User from "../models/user.model.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // -------------------- GET All Users --------------------
 export const getAllUsers = async (req, res) => {
@@ -49,7 +53,7 @@ export const updateUserStatus = async (req, res) => {
 
 // -------------------- Download Resume --------------------
 export const downloadResume = (req, res) => {
-  const filePath = path.join(process.cwd(), "uploads", "resumes", req.params.filename);
+  const filePath = path.join(__dirname, "..", "uploads", "resumes", req.params.filename);
   res.download(filePath, (err) => {
     if (err) res.status(404).json({ success: false, message: "File not found" });
   });

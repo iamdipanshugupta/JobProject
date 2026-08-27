@@ -62,6 +62,21 @@ app.use("/api/admin", adminRoutes);         // admin-specific operations
 app.use("/api/jobseekers", jobseekerRoutes); // job seeker management (admin only)
 
 const PORT = process.env.PORT || 8080;
+
+// 404 handler for unmatched API routes
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: "Route not found" });
+});
+
+// Global error handler — ensures every error response is JSON, never HTML
+app.use((err, req, res, next) => {
+  console.error("Unhandled Error:", err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal server error",
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
