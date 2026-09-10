@@ -11,6 +11,7 @@ const JobsManagement = () => {
     title: "",
     company: "",
     location: "",
+    salary: "",
     qualification: "",
     experience: "",
     jobType: "",
@@ -57,7 +58,7 @@ const JobsManagement = () => {
         editingJobId ? prev.map((j) => (j._id === data._id ? data : j)) : [...prev, data]
       );
 
-      setJob({ title: "", company: "", location: "", qualification: "", experience: "", jobType: "", description: "" });
+      setJob({ title: "", company: "", location: "", salary: "", qualification: "", experience: "", jobType: "", description: "" });
       setEditingJobId(null);
     } catch (err) {
       console.error("Error saving job:", err);
@@ -94,6 +95,7 @@ const JobsManagement = () => {
         <input name="title" placeholder="Job Title" className="border p-2 w-full" onChange={handleChange} value={job.title} />
         <input name="company" placeholder="Company" className="border p-2 w-full" onChange={handleChange} value={job.company} />
         <input name="location" placeholder="Location" className="border p-2 w-full" onChange={handleChange} value={job.location} />
+        <input name="salary" placeholder="Salary (e.g. ₹5-8 LPA)" className="border p-2 w-full" onChange={handleChange} value={job.salary} />
         <input name="qualification" placeholder="Qualification" className="border p-2 w-full" onChange={handleChange} value={job.qualification} />
         <input name="experience" placeholder="Experience" className="border p-2 w-full" onChange={handleChange} value={job.experience} />
         <select name="jobType" className="border p-2 w-full" onChange={handleChange} value={job.jobType}>
@@ -114,6 +116,7 @@ const JobsManagement = () => {
             <th className="border p-2">Title</th>
             <th className="border p-2">Company</th>
             <th className="border p-2">Location</th>
+            <th className="border p-2">Salary</th>
             <th className="border p-2">Qualification</th>
             <th className="border p-2">Type</th>
             <th className="border p-2">Actions</th>
@@ -125,6 +128,7 @@ const JobsManagement = () => {
               <td className="border p-2">{j.title}</td>
               <td className="border p-2">{j.company}</td>
               <td className="border p-2">{j.location}</td>
+              <td className="border p-2">{j.salary || "Not disclosed"}</td>
               <td className="border p-2">{j.qualification}</td>
               <td className="border p-2 capitalize">{j.jobType}</td>
               <td className="border p-2 space-x-2">

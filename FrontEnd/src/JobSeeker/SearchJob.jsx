@@ -102,6 +102,7 @@ const SearchJob = () => {
               <th className="border p-2">Title</th>
               <th className="border p-2">Company</th>
               <th className="border p-2">Location</th>
+              <th className="border p-2">Salary</th>
               <th className="border p-2">Qualification</th>
               <th className="border p-2">Type</th>
               <th className="border p-2">Action</th>
@@ -113,6 +114,7 @@ const SearchJob = () => {
                 <td className="border p-2">{job.title}</td>
                 <td className="border p-2">{job.company}</td>
                 <td className="border p-2">{job.location}</td>
+                <td className="border p-2">{job.salary || "Not disclosed"}</td>
                 <td className="border p-2">{job.qualification}</td>
                 <td className="border p-2 capitalize">{job.jobType}</td>
                 <td className="border p-2">

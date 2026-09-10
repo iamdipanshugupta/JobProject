@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { FaMapMarkerAlt, FaBuilding, FaMoneyBillWave, FaGraduationCap, FaBriefcase } from "react-icons/fa";
 import  API_BASE_URL  from "../config/api.js";
-import { getToken } from "../utils/auth.js";
+import { getToken, getUserId } from "../utils/auth.js";
+
 const ApplyJob = () => {
   const navigate = useNavigate();
 
@@ -12,37 +14,15 @@ const ApplyJob = () => {
   const [loading, setLoading] = useState(false);
   const [selectedResume, setSelectedResume] = useState(null);
 
-
-  // jobSeekerId state ensures it's available before submitting
-  const [jobSeekerId, setJobSeekerId] = useState(undefined);
+  const jobSeekerId = getUserId();
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUserId) {
-      setJobSeekerId(storedUserId);
-    } else if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser);
-        setJobSeekerId(parsed?.id || null); 
-      } catch {
-        setJobSeekerId(null);
-      }
-    } else {
-      setJobSeekerId(null);
-    }
-  }, []);
-
-  
-  useEffect(() => {
-    if (jobSeekerId === null) {
+    if (!jobSeekerId) {
       toast.error("Please login first to apply for a job!");
       navigate("/login");
     }
   }, [jobSeekerId, navigate]);
 
-  
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -58,103 +38,136 @@ const ApplyJob = () => {
     fetchJobs();
   }, []);
 
+  const selectedJob = jobs.find((j) => j._id === jobId);
+
   const handleApply = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const jobSeekerId = localStorage.getItem("jobSeekerId");
-  if (!jobSeekerId) {
-    toast.error("User not found. Please login again.");
-    navigate("/login");
-    return;
-  }
-
-  if (!jobId) {
-    toast.error("Please select a job to apply for.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const formData = new FormData();
-    formData.append("jobId", jobId);
-    formData.append("jobSeekerId", jobSeekerId);
-    formData.append("coverLetter", coverLetter || "");
-
-    if (selectedResume) {
-      formData.append("resume", selectedResume); // File object from <input type="file">
+    if (!jobId) {
+      toast.error("Please select a job to apply for.");
+      return;
     }
 
-    const res = await fetch(`${API_BASE_URL}/applications`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${getToken()}` },
-      body: formData, // ✅ no JSON.stringify
-    });
+    setLoading(true);
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || "Failed to apply");
+    try {
+      const formData = new FormData();
+      formData.append("jobId", jobId);
+      formData.append("coverLetter", coverLetter || "");
 
-    toast.success(data.msg || "✅ Applied Successfully!");
-    setJobId("");
-    setCoverLetter("");
-  } catch (err) {
-    console.error("Error applying for job:", err);
-    toast.error(err.message || "❌ Failed to apply for job");
-  } finally {
-    setLoading(false);
-  }
-};
+      if (selectedResume) {
+        formData.append("resume", selectedResume); // File object from <input type="file">
+      }
+
+      const res = await fetch(`${API_BASE_URL}/applications`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${getToken()}` },
+        body: formData, // ✅ no JSON.stringify
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to apply");
+
+      toast.success(data.message || "✅ Applied Successfully!");
+      setJobId("");
+      setCoverLetter("");
+      setSelectedResume(null);
+    } catch (err) {
+      console.error("Error applying for job:", err);
+      toast.error(err.message || "❌ Failed to apply for job");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="p-6 bg-white rounded shadow text-gray-900 max-w-md mx-auto">
+    <div className="p-6 bg-white rounded shadow text-gray-900 max-w-2xl mx-auto">
       <Toaster position="top-right" />
-      <h2 className="text-green-500 font-bold text-xl mb-4">Apply for a Job</h2>
+      <h2 className="text-green-600 font-bold text-xl mb-4">Apply for a Job</h2>
 
-     <form onSubmit={handleApply} className="space-y-3">
-  {/* Job Dropdown */}
-  <select
-    value={jobId}
-    onChange={(e) => setJobId(e.target.value)}
-    className="border p-2 w-full rounded text-gray-900"
-  >
-    <option value="">-- Select a Job --</option>
-    {jobs.map((job) => (
-      <option key={job._id} value={job._id}>
-        {job.title}
-      </option>
-    ))}
-  </select>
+      <form onSubmit={handleApply} className="space-y-4">
+        {/* Job Dropdown */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Select Job</label>
+          <select
+            value={jobId}
+            onChange={(e) => setJobId(e.target.value)}
+            className="border p-2 w-full rounded text-gray-900"
+          >
+            <option value="">-- Select a Job --</option>
+            {jobs.map((job) => (
+              <option key={job._id} value={job._id}>
+                {job.title} — {job.company} ({job.location})
+              </option>
+            ))}
+          </select>
+        </div>
 
-  {/* Cover Letter */}
-  <textarea
-    placeholder="Write a cover letter (optional)"
-    className="border p-2 w-full rounded text-gray-900"
-    rows="4"
-    value={coverLetter}
-    onChange={(e) => setCoverLetter(e.target.value)}
-  />
+        {/* Job details preview — shows once a job is picked, so you know exactly what you're applying to */}
+        {selectedJob && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h3 className="font-bold text-gray-900 text-lg mb-2">{selectedJob.title}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
+              <p className="flex items-center gap-2">
+                <FaBuilding className="text-green-600" /> {selectedJob.company}
+              </p>
+              <p className="flex items-center gap-2">
+                <FaMapMarkerAlt className="text-green-600" /> {selectedJob.location}
+              </p>
+              <p className="flex items-center gap-2">
+                <FaMoneyBillWave className="text-green-600" />
+                {selectedJob.salary || "Salary not disclosed"}
+              </p>
+              <p className="flex items-center gap-2">
+                <FaGraduationCap className="text-green-600" /> {selectedJob.qualification}
+              </p>
+              <p className="flex items-center gap-2 sm:col-span-2">
+                <FaBriefcase className="text-green-600" />
+                {selectedJob.experience} · <span className="capitalize">{selectedJob.jobType}</span>
+              </p>
+            </div>
+            {selectedJob.description && (
+              <p className="text-sm text-gray-600 mt-3 border-t border-green-200 pt-3">
+                {selectedJob.description}
+              </p>
+            )}
+          </div>
+        )}
 
-  {/* Resume File Input */}
-  <input
-    type="file"
-    onChange={(e) => setSelectedResume(e.target.files[0])}
-    className="border p-2 w-full rounded text-gray-900"
-  />
+        {/* Cover Letter */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Cover Letter (optional)</label>
+          <textarea
+            placeholder="Write a cover letter (optional)"
+            className="border p-2 w-full rounded text-gray-900"
+            rows="4"
+            value={coverLetter}
+            onChange={(e) => setCoverLetter(e.target.value)}
+          />
+        </div>
 
-  {/* Submit Button */}
-  <button
-    type="submit"
-    className={`bg-green-500 text-white p-2 rounded w-full transition ${
-      loading || jobSeekerId === null
-        ? "opacity-70 cursor-not-allowed"
-        : "hover:bg-green-600"
-    }`}
-    disabled={loading || jobSeekerId === null}
-  >
-    {loading ? "Applying..." : "Apply"}
-  </button>
-</form>
+        {/* Resume File Input */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Resume</label>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={(e) => setSelectedResume(e.target.files[0])}
+            className="border p-2 w-full rounded text-gray-900"
+          />
+        </div>
 
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className={`bg-green-600 text-white p-2.5 rounded w-full font-medium transition ${
+            loading ? "opacity-70 cursor-not-allowed" : "hover:bg-green-700"
+          }`}
+          disabled={loading}
+        >
+          {loading ? "Applying..." : "Apply"}
+        </button>
+      </form>
     </div>
   );
 };
