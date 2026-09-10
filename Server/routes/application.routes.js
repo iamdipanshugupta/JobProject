@@ -1,5 +1,6 @@
 import express from "express";
 import upload from "../utils/upload.js";
+import verifyToken, { isAdmin } from "../middleware/auth.middleware.js";
 import {
   applyForJob,
   getMyApplications,
@@ -11,14 +12,14 @@ import {
 
 const router = express.Router();
 
-// JobSeeker
-router.post("/", upload.single("resume"), applyForJob);
-router.get("/my", getMyApplications);
+// JobSeeker (identity comes from the verified token, not from the request body/query)
+router.post("/", verifyToken, upload.single("resume"), applyForJob);
+router.get("/my", verifyToken, getMyApplications);
 
 // Admin
-router.get("/all", getAllApplications);
-router.get("/", getApplicantsForJob);
-router.put("/:id/status", updateApplicationStatus);
-router.delete("/:id", deleteApplication);
+router.get("/all", verifyToken, isAdmin, getAllApplications);
+router.get("/", verifyToken, isAdmin, getApplicantsForJob);
+router.put("/:id/status", verifyToken, isAdmin, updateApplicationStatus);
+router.delete("/:id", verifyToken, isAdmin, deleteApplication);
 
 export default router;

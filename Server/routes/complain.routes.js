@@ -1,4 +1,5 @@
 import express from "express";
+import verifyToken, { isAdmin } from "../middleware/auth.middleware.js";
 import {
   submitComplaint,
   getAllComplaints,
@@ -8,9 +9,9 @@ import {
 
 const router = express.Router();
 
-router.post("/", submitComplaint);
-router.get("/", getAllComplaints);
-router.put("/:id", updateComplaintStatus);
-router.delete("/:id", deleteComplaint);
+router.post("/", submitComplaint);                              // public: anyone can submit
+router.get("/", verifyToken, isAdmin, getAllComplaints);         // admin only
+router.put("/:id", verifyToken, isAdmin, updateComplaintStatus); // admin only
+router.delete("/:id", verifyToken, isAdmin, deleteComplaint);    // admin only
 
 export default router;

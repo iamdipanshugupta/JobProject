@@ -8,10 +8,11 @@ const VALID_STATUSES = ["applied", "shortlisted", "selected", "rejected"];
 // -------------------- Apply for a Job (JobSeeker) --------------------
 export const applyForJob = async (req, res) => {
   try {
-    const { jobId, jobSeekerId, coverLetter } = req.body;
+    const { jobId, coverLetter } = req.body;
+    const jobSeekerId = req.userId; // derived from the verified JWT, never trust client input for identity
 
     if (!jobId || !jobSeekerId) {
-      return res.status(400).json({ success: false, message: "Job ID and Job Seeker ID are required" });
+      return res.status(400).json({ success: false, message: "Job ID is required" });
     }
 
     if (!mongoose.Types.ObjectId.isValid(jobId) || !mongoose.Types.ObjectId.isValid(jobSeekerId)) {
@@ -49,10 +50,10 @@ export const applyForJob = async (req, res) => {
 // -------------------- GET My Applications (JobSeeker) --------------------
 export const getMyApplications = async (req, res) => {
   try {
-    const { jobSeekerId } = req.query;
+    const jobSeekerId = req.userId; // derived from the verified JWT, not a client-supplied query param
 
-    if (!jobSeekerId || !mongoose.Types.ObjectId.isValid(jobSeekerId)) {
-      return res.status(400).json({ success: false, message: "Valid Job Seeker ID required" });
+    if (!jobSeekerId) {
+      return res.status(401).json({ success: false, message: "Not authenticated" });
     }
 
     const applications = await Application.find({ jobSeekerId })

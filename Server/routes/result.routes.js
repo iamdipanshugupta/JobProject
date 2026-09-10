@@ -1,10 +1,11 @@
 import express from "express";
+import verifyToken, { isAdmin } from "../middleware/auth.middleware.js";
 import { upsertResult, getResultsByJob, getResultsByUser } from "../controllers/result.controller.js";
 
 const router = express.Router();
 
-router.put("/", upsertResult);
-router.get("/user/:jobSeekerId", getResultsByUser);
-router.get("/:jobId", getResultsByJob);
+router.put("/", verifyToken, isAdmin, upsertResult);
+router.get("/user/:jobSeekerId", verifyToken, isAdmin, getResultsByUser);
+router.get("/:jobId", verifyToken, isAdmin, getResultsByJob);
 
 export default router;
