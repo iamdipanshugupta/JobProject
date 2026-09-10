@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import  API_BASE_URL  from "../config/api.js";
+import { getToken } from "../utils/auth.js";
 const ApplyJob = () => {
   const navigate = useNavigate();
 
@@ -86,6 +87,7 @@ const ApplyJob = () => {
 
     const res = await fetch(`${API_BASE_URL}/applications`, {
       method: "POST",
+      headers: { Authorization: `Bearer ${getToken()}` },
       body: formData, // ✅ no JSON.stringify
     });
 

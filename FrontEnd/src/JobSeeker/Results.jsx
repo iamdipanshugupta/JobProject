@@ -1,27 +1,19 @@
 import React, { useEffect, useState } from "react";
 import  API_BASE_URL from "../config/api.js";
+import { getToken } from "../utils/auth.js";
+
 const Results = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const jobSeekerId = localStorage.getItem("jobSeekerId");
-
   useEffect(() => {
     const fetchApplications = async () => {
-      if (!jobSeekerId) {
-        setApplications([]);
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       try {
-        const res = await fetch(
-          `${API_BASE_URL}/applications/my?jobSeekerId=${jobSeekerId}`
-        );
+        const res = await fetch(`${API_BASE_URL}/applications/my`, {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        });
         const data = await res.json();
-
-        console.log("Fetched applications:", data); // 🔹 debug
 
         if (data.success && Array.isArray(data.applications)) {
           setApplications(data.applications);
@@ -36,7 +28,7 @@ const Results = () => {
     };
 
     fetchApplications();
-  }, [jobSeekerId]);
+  }, []);
 
   return (
     <div className="p-6 bg-white rounded shadow text-gray-900 max-w-3xl mx-auto">

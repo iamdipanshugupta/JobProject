@@ -42,6 +42,7 @@ import ApplyJob from "./JobSeeker/ApplyJob.jsx";
 import Complain from "./JobSeeker/Complain.jsx";
 import Results from "./JobSeeker/Results.jsx";
 import Feedback from "./JobSeeker/Feedback.jsx";
+import Profile from "./JobSeeker/Profile.jsx";
 
 // -------------------- Protected Route Guard --------------------
 const ProtectedRoute = ({ children, allowedRole }) => {
@@ -104,6 +105,7 @@ const App = () => {
         <Route path="/jobseeker/complain"   element={<ProtectedRoute allowedRole="jobseeker"><JobSeekerLayout sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar}><Complain /></JobSeekerLayout></ProtectedRoute>} />
         <Route path="/jobseeker/results"    element={<ProtectedRoute allowedRole="jobseeker"><JobSeekerLayout sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar}><Results /></JobSeekerLayout></ProtectedRoute>} />
         <Route path="/jobseeker/feedback"   element={<ProtectedRoute allowedRole="jobseeker"><JobSeekerLayout sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar}><Feedback /></JobSeekerLayout></ProtectedRoute>} />
+        <Route path="/jobseeker/profile"    element={<ProtectedRoute allowedRole="jobseeker"><JobSeekerLayout sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar}><Profile /></JobSeekerLayout></ProtectedRoute>} />
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />

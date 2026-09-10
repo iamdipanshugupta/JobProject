@@ -37,8 +37,8 @@ const Dashboard = () => {
       try {
         const [jobsRes, appsRes, complaintsRes, feedbackRes, usersRes] = await Promise.all([
           fetch(`${API_BASE_URL}/jobs`).then((r) => r.json()).catch(() => []),
-          fetch(`${API_BASE_URL}/applications/all`).then((r) => r.json()).catch(() => ({ applications: [] })),
-          fetch(`${API_BASE_URL}/complaints`).then((r) => r.json()).catch(() => []),
+          fetch(`${API_BASE_URL}/applications/all`, authHeaders).then((r) => r.json()).catch(() => ({ applications: [] })),
+          fetch(`${API_BASE_URL}/complaints`, authHeaders).then((r) => r.json()).catch(() => []),
           fetch(`${API_BASE_URL}/feedback`, authHeaders).then((r) => r.json()).catch(() => ({ feedbacks: [] })),
           fetch(`${API_BASE_URL}/admin/users`, authHeaders).then((r) => r.json()).catch(() => ({ users: [] })),
         ]);

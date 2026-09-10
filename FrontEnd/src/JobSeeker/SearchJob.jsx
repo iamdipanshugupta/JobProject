@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import  API_BASE_URL  from "../config/api.js";
-const SearchJob = ({ jobSeekerId }) => {
+import { getToken } from "../utils/auth.js";
+
+const SearchJob = () => {
   const [filters, setFilters] = useState({
     location: "",
     company: "",
@@ -30,14 +33,18 @@ const SearchJob = ({ jobSeekerId }) => {
     try {
       const res = await fetch(`${API_BASE_URL}/applications`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId, jobSeekerId }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ jobId }),
       });
       const data = await res.json();
-      alert(data.msg || "Applied Successfully!");
+      if (!res.ok) throw new Error(data.message || "Failed to apply for job");
+      toast.success(data.message || "Applied successfully!");
     } catch (err) {
       console.error("Error applying job:", err);
-      alert("❌ Failed to apply for job");
+      toast.error(err.message || "Failed to apply for job");
     }
   };
 

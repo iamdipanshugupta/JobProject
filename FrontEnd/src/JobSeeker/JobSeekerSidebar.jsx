@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { FaTachometerAlt, FaSearch, FaBriefcase, FaCommentDots, FaExclamationCircle, FaClipboardCheck } from "react-icons/fa";
+import { FaTachometerAlt, FaSearch, FaBriefcase, FaCommentDots, FaExclamationCircle, FaClipboardCheck, FaUserCircle } from "react-icons/fa";
 
 const navItems = [
   { icon: <FaTachometerAlt />, label: "Dashboard",   path: "/jobseeker/dashboard" },
+  { icon: <FaUserCircle />,    label: "My Profile",  path: "/jobseeker/profile" },
   { icon: <FaSearch />,        label: "Search Jobs", path: "/jobseeker/search-job" },
   { icon: <FaBriefcase />,     label: "Apply For Job", path: "/jobseeker/apply-job" },
   { icon: <FaCommentDots />,   label: "Feedback",    path: "/jobseeker/feedback" },

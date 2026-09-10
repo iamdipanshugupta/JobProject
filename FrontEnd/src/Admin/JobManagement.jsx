@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import API_BASE_URL from "../config/api.js";
+import { getToken } from "../utils/auth.js";
+import usePagination from "../utils/usePagination.js";
+import Pagination from "../componants/Pagination.jsx";
 
-const JobsManagement = ({ token }) => {
+const JobsManagement = () => {
+  const token = getToken();
   const [jobs, setJobs] = useState([]);
   const [job, setJob] = useState({
     title: "",
@@ -79,6 +83,8 @@ const JobsManagement = ({ token }) => {
     }
   };
 
+  const { pageItems: pagedJobs, ...pagination } = usePagination(jobs, 10);
+
   return (
     <div className="p-6 bg-white rounded shadow text-gray-900">
       <h2 className="text-green-500 font-bold text-xl mb-4">Jobs Management</h2>
@@ -114,7 +120,7 @@ const JobsManagement = ({ token }) => {
           </tr>
         </thead>
         <tbody>
-          {jobs.map((j) => (
+          {pagedJobs.map((j) => (
             <tr key={j._id}>
               <td className="border p-2">{j.title}</td>
               <td className="border p-2">{j.company}</td>
@@ -129,6 +135,7 @@ const JobsManagement = ({ token }) => {
           ))}
         </tbody>
       </table>
+      <Pagination {...pagination} />
     </div>
   );
 };

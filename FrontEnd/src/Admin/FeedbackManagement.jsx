@@ -16,7 +16,7 @@ const FeedbackManagement = () => {
         if (data.success) setFeedbacks(data.feedbacks);
         else toast.error(data.message);
       } catch (err) {
-        toast.error("Failed to fetch feedbacks!");
+        toast.error("Failed to fetch feedbacks!" , err);
       }
     };
     fetchFeedbacks();
@@ -38,7 +38,7 @@ const FeedbackManagement = () => {
         toast.error(data.message);
       }
     } catch (err) {
-      toast.error("Failed to delete feedback!");
+      toast.error("Failed to delete feedback!",err);
     }
   };
 

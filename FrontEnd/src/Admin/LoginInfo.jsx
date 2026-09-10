@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from "../config/api.js";
 import { getToken } from "../utils/auth.js";
+import usePagination from "../utils/usePagination.js";
+import Pagination from "../componants/Pagination.jsx";
 
 const LoginInfo = () => {
   const [users, setUsers] = useState([]);
@@ -56,6 +58,8 @@ const LoginInfo = () => {
     }
   };
 
+  const { pageItems: pagedUsers, ...pagination } = usePagination(users, 10);
+
   return (
     <div className="bg-gray-100 text-black font-sans p-6 min-h-screen">
       <Toaster position="top-right" />
@@ -86,7 +90,7 @@ const LoginInfo = () => {
               </tr>
             )}
 
-            {users.map(user => (
+            {pagedUsers.map(user => (
               <tr key={user._id} className="hover:bg-gray-50">
                 <td className="px-4 py-2 border">{user.name || "N/A"}</td>
                 <td className="px-4 py-2 border">{user.email}</td>
@@ -124,6 +128,7 @@ const LoginInfo = () => {
             ))}
           </tbody>
         </table>
+        <Pagination {...pagination} />
       </section>
     </div>
   );

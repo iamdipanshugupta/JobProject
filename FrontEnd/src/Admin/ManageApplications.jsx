@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import API_BASE_URL from "../config/api.js";
+import usePagination from "../utils/usePagination.js";
+import Pagination from "../componants/Pagination.jsx";
 
 const ManageApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -68,6 +70,8 @@ const ManageApplications = () => {
     }
   };
 
+  const { pageItems: pagedApplications, ...pagination } = usePagination(applications, 10);
+
   return (
     <div className="p-6">
       <h2 className="text-3xl font-bold mb-6 text-green-600">Manage Applications</h2>
@@ -86,14 +90,14 @@ const ManageApplications = () => {
             </tr>
           </thead>
           <tbody>
-            {applications.length === 0 ? (
+            {pagedApplications.length === 0 ? (
               <tr>
                 <td colSpan="5" className="text-center text-gray-900 py-4">
                   No applications found
                 </td>
               </tr>
             ) : (
-              applications.map((app) => (
+              pagedApplications.map((app) => (
                 <tr key={app._id} className="text-center">
                   <td className="py-2 px-4 text-gray-900 border">
                     {app.jobId?.title || "N/A"}
@@ -141,6 +145,7 @@ const ManageApplications = () => {
           </tbody>
         </table>
       )}
+      {!loading && <Pagination {...pagination} />}
     </div>
   );
 };

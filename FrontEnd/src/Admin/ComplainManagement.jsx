@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from "../config/api.js";
+import { getToken } from "../utils/auth.js";
 
 const ComplainManagement = () => {
   const [complains, setComplains] = useState([]);
@@ -12,7 +13,9 @@ const ComplainManagement = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API_BASE_URL}/complaints`);
+      const res = await fetch(`${API_BASE_URL}/complaints`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
       if (!res.ok) throw new Error("Failed to fetch complaints");
       const data = await res.json();
       setComplains(data);
@@ -32,7 +35,10 @@ const ComplainManagement = () => {
     try {
       const res = await fetch(`${API_BASE_URL}/complaints/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
         body: JSON.stringify({ status: "Resolved" }),
       });
 
@@ -52,6 +58,7 @@ const ComplainManagement = () => {
       console.log("Deleting complaint ID:", id); // ✅ Debug
       const res = await fetch(`${API_BASE_URL}/complaints/${id}`, {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${getToken()}` },
       });
 
       if (!res.ok) throw new Error("Failed to delete complaint");

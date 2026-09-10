@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config/api.js";
 import { getToken } from "../utils/auth.js";
+import toast, { Toaster } from "react-hot-toast";
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -39,7 +40,7 @@ const AdminUsers = () => {
             window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Error downloading resume:", error);
-            alert("Failed to download resume");
+            toast.error("Failed to download resume");
         }
     };
 

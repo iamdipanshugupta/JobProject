@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from "../config/api.js";
+import { getToken } from "../utils/auth.js";
 
 const ResultManagement = () => {
   const [result, setResult] = useState({ jobId: "", jobSeekerId: "", status: "" });
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(false);
+  const authHeaders = { Authorization: `Bearer ${getToken()}` };
 
   // ✅ Fetch all jobs
   useEffect(() => {
@@ -31,7 +34,9 @@ const ResultManagement = () => {
 
     const fetchApplicants = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/applications?jobId=${result.jobId}`);
+        const res = await fetch(`${API_BASE_URL}/applications?jobId=${result.jobId}`, {
+          headers: authHeaders,
+        });
         const data = await res.json();
         if (data.success && Array.isArray(data.applications)) {
           // ✅ Filter only applicants with valid jobSeekerId._id
@@ -60,7 +65,7 @@ const ResultManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!result.jobId || !result.jobSeekerId || !result.status) {
-      alert("⚠️ Please fill all fields");
+      toast.error("Please fill all fields");
       return;
     }
 
@@ -68,22 +73,24 @@ const ResultManagement = () => {
     try {
       const res = await fetch(`${API_BASE_URL}/results`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify(result),
       });
       const data = await res.json();
-      alert(data.msg || "✅ Result Updated Successfully!");
+      if (!res.ok) throw new Error(data.message || "Failed to update result");
+      toast.success(data.message || "Result updated successfully!");
       setResult({ jobId: "", jobSeekerId: "", status: "" });
       setApplicants([]);
     } catch (err) {
       console.error("Error updating result:", err);
-      alert("❌ Failed to update result");
+      toast.error(err.message || "Failed to update result");
     }
     setLoading(false);
   };
 
   return (
     <div className="p-6 bg-white rounded shadow text-gray-900 max-w-md mx-auto">
+      <Toaster position="top-right" />
       <h2 className="text-green-500 font-bold text-xl mb-4">Result Management</h2>
 
       <form className="space-y-3" onSubmit={handleSubmit}>
@@ -113,7 +120,7 @@ const ResultManagement = () => {
           <option value="">Select Applicant</option>
           {applicants.map((app) => (
             <option key={app._id} value={app.jobSeekerId._id}>
-              {app.jobSeekerId.username || "Unknown"} ({app.jobSeekerId.email || "No Email"})
+              {app.jobSeekerId.username || app.jobSeekerId.name || "Unknown"} ({app.jobSeekerId.email || "No Email"})
             </option>
           ))}
         </select>
