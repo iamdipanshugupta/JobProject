@@ -20,9 +20,10 @@ const Viewjob = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [keyword, setKeyword] = useState(searchParams.get("keyword") || searchParams.get("category") || "");
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   const [location, setLocation] = useState(searchParams.get("location") || "");
   const [jobType, setJobType] = useState("");
+  const [category, setCategory] = useState(searchParams.get("category") || "");
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -49,9 +50,10 @@ const Viewjob = () => {
         ? job.location?.toLowerCase().includes(location.toLowerCase())
         : true;
       const matchesType = jobType ? job.jobType === jobType : true;
-      return matchesKeyword && matchesLocation && matchesType;
+      const matchesCategory = category ? job.category === category : true;
+      return matchesKeyword && matchesLocation && matchesType && matchesCategory;
     });
-  }, [jobs, keyword, location, jobType]);
+  }, [jobs, keyword, location, jobType, category]);
 
   const handleApply = (job) => {
     if (!isLoggedIn()) {
@@ -104,11 +106,25 @@ const Viewjob = () => {
           <select
             value={jobType}
             onChange={(e) => setJobType(e.target.value)}
-            className="border border-gray-200 rounded-lg px-3 py-2.5 text-gray-600 focus:outline-none md:w-48"
+            className="border border-gray-200 rounded-lg px-3 py-2.5 text-gray-600 focus:outline-none md:w-40"
           >
             <option value="">All job types</option>
             <option value="government">Government</option>
             <option value="private">Private</option>
+          </select>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border border-gray-200 rounded-lg px-3 py-2.5 text-gray-600 focus:outline-none md:w-48"
+          >
+            <option value="">All categories</option>
+            <option value="IT & Software">IT & Software</option>
+            <option value="Design">Design</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Business">Business</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
           </select>
         </div>
       </div>

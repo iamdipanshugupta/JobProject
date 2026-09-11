@@ -127,6 +127,7 @@ const JobsManagement = () => {
             <th className="border p-2">Company</th>
             <th className="border p-2">Location</th>
             <th className="border p-2">Salary</th>
+            <th className="border p-2">Category</th>
             <th className="border p-2">Qualification</th>
             <th className="border p-2">Type</th>
             <th className="border p-2">Actions</th>
@@ -139,6 +140,7 @@ const JobsManagement = () => {
               <td className="border p-2">{j.company}</td>
               <td className="border p-2">{j.location}</td>
               <td className="border p-2">{j.salary || "Not disclosed"}</td>
+              <td className="border p-2">{j.category || "Other"}</td>
               <td className="border p-2">{j.qualification}</td>
               <td className="border p-2 capitalize">{j.jobType}</td>
               <td className="border p-2 space-x-2">
