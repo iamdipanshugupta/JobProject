@@ -12,6 +12,7 @@ const JobsManagement = () => {
     company: "",
     location: "",
     salary: "",
+    category: "Other",
     qualification: "",
     experience: "",
     jobType: "",
@@ -58,7 +59,7 @@ const JobsManagement = () => {
         editingJobId ? prev.map((j) => (j._id === data._id ? data : j)) : [...prev, data]
       );
 
-      setJob({ title: "", company: "", location: "", salary: "", qualification: "", experience: "", jobType: "", description: "" });
+      setJob({ title: "", company: "", location: "", salary: "", category: "Other", qualification: "", experience: "", jobType: "", description: "" });
       setEditingJobId(null);
     } catch (err) {
       console.error("Error saving job:", err);
@@ -102,6 +103,15 @@ const JobsManagement = () => {
           <option value="">Select Job Type</option>
           <option value="government">Government</option>
           <option value="private">Private</option>
+        </select>
+        <select name="category" className="border p-2 w-full" onChange={handleChange} value={job.category}>
+          <option value="IT & Software">IT & Software</option>
+          <option value="Design">Design</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Business">Business</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Education">Education</option>
+          <option value="Other">Other</option>
         </select>
         <textarea name="description" placeholder="Description" className="border p-2 w-full" onChange={handleChange} value={job.description}></textarea>
         <button type="submit" className="bg-green-500 text-white p-2 rounded w-full">

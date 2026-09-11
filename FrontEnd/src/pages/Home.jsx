@@ -1,175 +1,337 @@
-import Testimonials from "../componants/Testimonials.jsx";
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-const featuredJobs = [
-  { logo: "company-logo-sspace-150x150-1-150x150.jpg",   title: "UX Designer",            company: "CodePen",          location: "Bangalore, Karnataka" },
-  { logo: "company-logo-disqus-150x150-1-150x150.jpg",   title: "Web Designer / Developer", company: "Disney",          location: "Mumbai, Maharashtra" },
-  { logo: "listing-codepen-logo-150x150.jpg",            title: "Graphic Designer",         company: "Creative Studio", location: "Pune, Maharashtra" },
-  { logo: "company-logo-pinterest-300x300-1-150x150.jpg", title: "Senior Designer",         company: "Docker",          location: "Hyderabad, Telangana" },
-  { logo: "company-logo-fitbit-300x300-1-150x150.jpg",   title: "Design Technologist",     company: "Fitbit",          location: "Gurgaon, Haryana" },
-  { logo: "company-logo-paypal-300x300-1-150x150.jpg",   title: "Front-End Engineer",      company: "PayPal",          location: "Chennai, Tamil Nadu" },
-];
+import { FaMapMarkerAlt, FaSearch, FaBriefcase, FaBuilding, FaMoneyBillWave } from "react-icons/fa";
+import Testimonials from "../componants/Testimonials.jsx";
+import API_BASE_URL from "../config/api.js";
 
 const categories = [
-  { icon: "🖥️", title: "IT & Software" }, { icon: "🎨", title: "Design" },
-  { icon: "📈", title: "Marketing" },     { icon: "💼", title: "Business" },
-  { icon: "🛠️", title: "Engineering" },  { icon: "📚", title: "Education" },
+  { icon: "🖥️", title: "IT & Software" },
+  { icon: "🎨", title: "Design" },
+  { icon: "📈", title: "Marketing" },
+  { icon: "💼", title: "Business" },
+  { icon: "🛠️", title: "Engineering" },
+  { icon: "📚", title: "Education" },
 ];
 
-const Home = () => (
-  <>
-    {/* Hero */}
-    <motion.div
-      className="relative bg-cover bg-center min-h-screen text-center py-16 px-4"
-      style={{ backgroundImage: "url('widget-search-background.jpg')" }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-    >
-      <div className="relative z-20 p-8 rounded-lg max-w-6xl w-full mx-auto mt-20">
-        <h1 className="text-3xl md:text-5xl text-gray-700 mb-4">The Easiest Way to Get Your New Job</h1>
-        <p className="text-gray-600 mb-8 text-lg md:text-xl">Find jobs, create trackable resumes and enrich your applications.</p>
-        <div className="flex flex-col md:flex-row flex-wrap justify-center gap-4">
-          <input type="text" placeholder="Keywords" className="p-3 border border-gray-300 rounded w-full md:w-64 focus:outline-none placeholder-gray-600 text-gray-600" />
-          <input type="text" placeholder="Location" className="p-3 border border-gray-300 rounded w-full md:w-64 focus:outline-none placeholder-gray-600 text-gray-600" />
-          <select className="p-3 border border-gray-300 rounded w-full md:w-64 text-gray-600 focus:outline-none">
-            <option value="">Choose a category...</option>
-            <option value="it">IT</option>
-            <option value="marketing">Marketing</option>
-            <option value="design">Design</option>
-          </select>
-        </div>
-        <div className="flex justify-center mt-6">
-          <button className="bg-[#5bbc2e] text-white font-semibold px-6 py-3 rounded hover:bg-[#4ca923] transition">
-            SEARCH JOBS
-          </button>
-        </div>
-      </div>
-    </motion.div>
+const Home = () => {
+  const navigate = useNavigate();
 
-    {/* Companies */}
-    <motion.div className="bg-white py-12" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
-      <div className="relative z-20 p-4 sm:p-8 rounded-lg max-w-6xl w-full mx-auto">
-        <h2 className="text-3xl md:text-4xl text-gray-600 mb-4 text-center">Companies We've Helped</h2>
-        <p className="text-gray-600 mb-8 text-lg text-center">Some of the companies we've helped recruit excellent applicants over the years.</p>
-        <div className="flex flex-wrap justify-center items-center gap-6">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <img key={i} src={`testimonial-company-${i}.png`} alt={`Company ${i}`} className="h-16 md:h-20 object-contain" />
+  // Hero search state
+  const [keyword, setKeyword] = useState("");
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+
+  // Real jobs pulled from the backend — no more fake placeholder listings
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/jobs`);
+        const data = await res.json();
+        setJobs(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (keyword) params.set("keyword", keyword);
+    if (location) params.set("location", location);
+    if (category) params.set("category", category);
+    navigate(`/viewjob?${params.toString()}`);
+  };
+
+  const featuredJobs = jobs.slice(0, 5);
+
+  return (
+    <>
+      {/* Hero */}
+      <motion.div
+        className="relative bg-cover bg-center min-h-screen flex items-center"
+        style={{ backgroundImage: "url('widget-search-background.jpg')" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        {/* Dark overlay for text contrast */}
+        <div className="absolute inset-0 bg-black/50" />
+
+        <div className="relative z-10 max-w-5xl w-full mx-auto px-4 text-center py-24">
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
+            The Easiest Way to Get Your New Job
+          </h1>
+          <p className="text-gray-200 mb-8 text-lg md:text-xl">
+            Find jobs, track applications, and land your next opportunity — all in one place.
+          </p>
+
+          <form
+            onSubmit={handleSearch}
+            className="bg-white rounded-xl shadow-lg p-4 flex flex-col md:flex-row gap-3 max-w-3xl mx-auto"
+          >
+            <div className="flex items-center flex-1 gap-2 border border-gray-200 rounded-lg px-3">
+              <FaSearch className="text-gray-400 flex-shrink-0" />
+              <input
+                type="text"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="Job title or keyword"
+                className="w-full py-2.5 focus:outline-none text-gray-800"
+              />
+            </div>
+            <div className="flex items-center flex-1 gap-2 border border-gray-200 rounded-lg px-3">
+              <FaMapMarkerAlt className="text-gray-400 flex-shrink-0" />
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Location"
+                className="w-full py-2.5 focus:outline-none text-gray-800"
+              />
+            </div>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="border border-gray-200 rounded-lg px-3 py-2.5 text-gray-600 focus:outline-none md:w-48"
+            >
+              <option value="">All categories</option>
+              {categories.map((c) => (
+                <option key={c.title} value={c.title}>{c.title}</option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="bg-green-600 text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-green-700 transition whitespace-nowrap"
+            >
+              Search Jobs
+            </button>
+          </form>
+        </div>
+      </motion.div>
+
+      {/* Companies strip */}
+      <motion.div
+        className="bg-white py-12"
+        initial={{ y: -30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="max-w-6xl w-full mx-auto px-4">
+          <p className="text-gray-400 text-sm uppercase tracking-widest text-center mb-8">
+            Trusted by job seekers across India
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-10 opacity-70">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <img
+                key={i}
+                src={`testimonial-company-${i}.png`}
+                alt="Partner logo"
+                className="h-10 md:h-12 object-contain grayscale hover:grayscale-0 transition"
+              />
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Why Jobify — job-seeker focused */}
+      <motion.div
+        className="bg-green-600 py-20 px-4"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="max-w-5xl mx-auto text-center text-white">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Your career search, simplified</h2>
+          <p className="text-green-50 text-lg mb-12 max-w-2xl mx-auto">
+            Everything you need to find, apply to, and land your next job — without the chaos of spreadsheets and forgotten follow-ups.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+            <div className="bg-white/10 rounded-xl p-6">
+              <FaSearch className="text-2xl mb-3" />
+              <h3 className="font-bold text-lg mb-2">Search smarter</h3>
+              <p className="text-green-50 text-sm">Filter by role, location, and category to find jobs that actually fit.</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-6">
+              <FaBriefcase className="text-2xl mb-3" />
+              <h3 className="font-bold text-lg mb-2">Apply in one click</h3>
+              <p className="text-green-50 text-sm">Upload your resume once, apply to as many roles as you like.</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-6">
+              <FaMoneyBillWave className="text-2xl mb-3" />
+              <h3 className="font-bold text-lg mb-2">Track every application</h3>
+              <p className="text-green-50 text-sm">See exactly where you stand — applied, shortlisted, or selected.</p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Featured Jobs — real data from the backend */}
+      <motion.div
+        className="bg-white py-16 px-4"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <h2 className="text-3xl md:text-4xl text-center text-gray-800 font-bold mb-2">Latest Openings</h2>
+        <p className="text-center text-gray-500 mb-10">Freshly posted roles, updated in real time</p>
+
+        <div className="space-y-4 max-w-5xl mx-auto">
+          {loading ? (
+            <p className="text-center text-gray-400 py-10">Loading jobs…</p>
+          ) : featuredJobs.length === 0 ? (
+            <div className="text-center text-gray-400 py-10">
+              <FaBriefcase className="text-4xl mx-auto mb-3" />
+              <p>No jobs posted yet — check back soon!</p>
+            </div>
+          ) : (
+            featuredJobs.map((job, index) => (
+              <motion.div
+                key={job._id}
+                className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-5 border border-gray-100 rounded-xl bg-white hover:shadow-md hover:border-green-200 transition"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
+              >
+                <div className="flex items-center gap-4">
+                  <span className="w-11 h-11 rounded-lg bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                    <FaBuilding />
+                  </span>
+                  <div>
+                    <h4 className="font-semibold text-gray-800">{job.title}</h4>
+                    <p className="text-sm text-gray-500">{job.company}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                  <span className="flex items-center gap-1.5">
+                    <FaMapMarkerAlt className="text-green-600" /> {job.location}
+                  </span>
+                  {job.salary && (
+                    <span className="flex items-center gap-1.5">
+                      <FaMoneyBillWave className="text-green-600" /> {job.salary}
+                    </span>
+                  )}
+                  <span className="text-xs bg-gray-100 px-2.5 py-1 rounded-full capitalize">{job.jobType}</span>
+                </div>
+              </motion.div>
+            ))
+          )}
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <Link
+            to="/viewjob"
+            className="px-6 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition"
+          >
+            View All Jobs
+          </Link>
+        </div>
+      </motion.div>
+
+      {/* Stats — real numbers only */}
+      <motion.div
+        className="bg-gray-50 py-16 px-4"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <h2 className="text-center text-gray-800 text-3xl font-bold">Jobify by the numbers</h2>
+        <div className="mt-10 flex flex-col md:flex-row justify-center items-center divide-y md:divide-y-0 md:divide-x divide-gray-300 max-w-3xl mx-auto">
+          <div className="w-full md:w-1/2 text-center py-6 md:py-0">
+            <h3 className="text-4xl font-bold text-green-600">{loading ? "…" : jobs.length}</h3>
+            <p className="text-gray-500 mt-2">Live Job Openings</p>
+          </div>
+          <div className="w-full md:w-1/2 text-center py-6 md:py-0">
+            <h3 className="text-4xl font-bold text-green-600">{categories.length}</h3>
+            <p className="text-gray-500 mt-2">Categories to Explore</p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Categories */}
+      <motion.div
+        className="py-16 bg-white"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <h2 className="text-3xl text-center font-bold text-gray-800 mb-10">Top Job Categories</h2>
+        <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto px-4">
+          {categories.map((cat, i) => (
+            <motion.div
+              key={i}
+              onClick={() => navigate(`/viewjob?category=${encodeURIComponent(cat.title)}`)}
+              className="w-40 h-40 bg-gray-50 shadow-sm rounded-xl flex flex-col items-center justify-center text-center p-4 hover:shadow-md hover:bg-green-50 cursor-pointer transition"
+              whileHover={{ scale: 1.05 }}
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+            >
+              <div className="text-4xl">{cat.icon}</div>
+              <p className="mt-3 font-semibold text-gray-700">{cat.title}</p>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
 
-    {/* Recruiting Advantage */}
-    <motion.div
-      className="relative bg-fixed bg-cover bg-center h-[70vh] text-center px-4 py-16"
-      style={{ backgroundImage: "url('hero-image-text-right-darker.jpg')" }}
-      initial={{ scale: 0.9 }} animate={{ scale: 1 }} transition={{ duration: 0.5 }}
-    >
-      <div className="flex justify-end px-4 py-16">
-        <div className="max-w-2xl text-left">
-          <h2 className="text-3xl md:text-4xl text-white mb-4">Make Recruiting Your Competitive Advantage</h2>
-          <p className="text-white mb-8 text-lg">Talent is a top priority for all startup founders. Jobify offers a way to completely optimize your recruiting process.</p>
-          <button className="bg-white text-gray-600 font-semibold px-6 py-3 rounded hover:bg-transparent hover:text-white hover:border-2 transition">
-            Get Started
-          </button>
+      {/* Join CTA */}
+      <motion.div
+        className="relative bg-fixed bg-cover bg-center py-24 px-4 text-center"
+        style={{ backgroundImage: "url('hero-image-text-left-darker.jpg')" }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Ready to find your next role?
+          </h2>
+          <p className="text-gray-200 mb-8 text-lg">
+            Create your free profile in minutes and start applying today.
+          </p>
+          <Link
+            to="/register"
+            className="inline-block bg-green-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-green-700 transition"
+          >
+            Get Started — It's Free
+          </Link>
+        </div>
+      </motion.div>
+
+      <Testimonials />
+
+      {/* FAQ / Contact */}
+      <div className="w-full bg-gray-100 py-16 px-4">
+        <div className="py-10 px-6 md:px-10 text-center max-w-3xl mx-auto">
+          <h3 className="text-3xl font-bold text-gray-800 mb-4">Got a question?</h3>
+          <p className="text-gray-600 text-base md:text-lg">
+            We're here to help. Send us an{" "}
+            <Link to="/enquiry" className="text-green-600 font-medium underline hover:text-green-700">
+              enquiry
+            </Link>{" "}
+            and we'll get back to you shortly.
+          </p>
         </div>
       </div>
-    </motion.div>
-
-    {/* Featured Jobs */}
-    <motion.div className="bg-white py-12 px-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-      <h2 className="text-4xl text-center text-gray-600 mb-10">Hundreds of Jobs From All Over India</h2>
-      <div className="space-y-4 max-w-7xl mx-auto">
-        {featuredJobs.map((job, index) => (
-          <motion.div
-            key={index}
-            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border-t last:border-b bg-white hover:bg-gray-50 hover:border-l-4 hover:border-[#5bbc2e] transition"
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            <div className="flex items-center gap-4">
-              <img src={job.logo} alt="Company logo" className="w-12 h-12 object-contain" />
-              <div>
-                <h4 className="font-semibold text-gray-800">{job.title}</h4>
-                <p className="text-sm text-gray-600">{job.company}</p>
-              </div>
-            </div>
-            <div className="flex items-center text-gray-700 text-sm gap-1">
-              <svg className="w-4 h-4 text-[#5bbc2e]" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.05 3.05a7 7 0 119.9 9.9l-4.95 4.95-4.95-4.95a7 7 0 010-9.9zm4.95 1.414a2.5 2.5 0 100 5 2.5 2.5 0 000-5z" clipRule="evenodd" />
-              </svg>
-              <span>{job.location}</span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-      <div className="mt-10 flex justify-center">
-        <a href="/viewjob" className="px-6 py-2 bg-[#5bbc2e] text-white font-semibold rounded hover:bg-[#4ca923] transition">
-          Load More Listings
-        </a>
-      </div>
-    </motion.div>
-
-    {/* Join Section */}
-    <motion.div className="relative bg-fixed bg-cover bg-center h-[70vh] text-center px-4 pt-32" style={{ backgroundImage: "url('hero-image-text-left-darker.jpg')" }}>
-      <div className="max-w-2xl text-start pl-16">
-        <h2 className="text-4xl font-semibold text-white mb-6">Join Thousands of Companies That Rely on Jobify</h2>
-        <p className="text-white mb-8 text-lg">Jobify offers a way to completely optimize your entire recruiting process.</p>
-        <button className="bg-white text-gray-700 font-bold px-6 py-3 rounded hover:bg-transparent hover:text-white hover:border hover:border-white transition">
-          GET STARTED
-        </button>
-      </div>
-    </motion.div>
-
-    {/* Stats */}
-    <motion.div className="bg-white py-20 px-4">
-      <h2 className="text-center text-gray-700 text-4xl font-semibold">Jobify Site Stats</h2>
-      <p className="text-center text-gray-500 text-lg mt-4 max-w-3xl mx-auto">Here we list our site stats and how many people we've helped find a job.</p>
-      <div className="mt-12 flex flex-col md:flex-row justify-center items-center divide-y md:divide-y-0 md:divide-x divide-gray-300">
-        {[{ label: "Jobs Posted", value: 14 }, { label: "Jobs Filled", value: 0 }, { label: "Companies", value: 14 }, { label: "Members", value: 2482 }].map((stat, i) => (
-          <div key={i} className="w-full md:w-1/4 text-center py-6 md:py-0">
-            <h3 className="text-3xl font-bold text-gray-600">{stat.value}</h3>
-            <p className="text-gray-500 mt-2">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-
-    {/* Categories */}
-    <motion.div className="py-16 bg-gray-50" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <h2 className="text-3xl text-center font-bold text-gray-700 mb-10">Top Job Categories</h2>
-      <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
-        {categories.map((cat, i) => (
-          <motion.div
-            key={i}
-            className="w-40 h-40 bg-white shadow-md rounded-lg flex flex-col items-center justify-center text-center p-4 hover:shadow-xl transition"
-            whileHover={{ scale: 1.1 }}
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.4, delay: i * 0.1 }}
-          >
-            <div className="text-4xl">{cat.icon}</div>
-            <p className="mt-3 font-semibold text-gray-600">{cat.title}</p>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-
-    <Testimonials />
-
-    {/* FAQ */}
-    <div className="w-full bg-gray-100 py-16 px-4">
-      <div className="py-10 px-6 md:px-10 text-center max-w-3xl mx-auto">
-        <h3 className="text-3xl font-bold text-gray-800 mb-4">Got a question?</h3>
-        <p className="text-gray-600 text-base md:text-lg mb-6">
-          We're here to help. Check out our{" "}
-          <a href="/faqs" className="text-blue-600 underline hover:text-blue-800">FAQs</a>,
-          send us an <a href="/enquiry" className="text-blue-600 underline hover:text-blue-800">enquiry</a>,
-          or call us at <a href="tel:18005555555" className="text-blue-600 underline hover:text-blue-800">1 800 555 5555</a>.
-        </p>
-      </div>
-    </div>
-  </>
-);
+    </>
+  );
+};
 
 export default Home;

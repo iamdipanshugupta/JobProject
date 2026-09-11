@@ -1,204 +1,206 @@
-import React from 'react'
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import toast, { Toaster } from "react-hot-toast";
+import {
+  FaSearch,
+  FaMapMarkerAlt,
+  FaBuilding,
+  FaMoneyBillWave,
+  FaGraduationCap,
+  FaBriefcase,
+} from "react-icons/fa";
+import API_BASE_URL from "../config/api.js";
+import { isLoggedIn, getRole } from "../utils/auth.js";
+
 const Viewjob = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || searchParams.get("category") || "");
+  const [location, setLocation] = useState(searchParams.get("location") || "");
+  const [jobType, setJobType] = useState("");
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/jobs`);
+        const data = await res.json();
+        setJobs(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+        toast.error("Unable to load jobs right now.");
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, []);
+
+  const filteredJobs = useMemo(() => {
+    return jobs.filter((job) => {
+      const text = `${job.title} ${job.company} ${job.description || ""}`.toLowerCase();
+      const matchesKeyword = keyword ? text.includes(keyword.toLowerCase()) : true;
+      const matchesLocation = location
+        ? job.location?.toLowerCase().includes(location.toLowerCase())
+        : true;
+      const matchesType = jobType ? job.jobType === jobType : true;
+      return matchesKeyword && matchesLocation && matchesType;
+    });
+  }, [jobs, keyword, location, jobType]);
+
+  const handleApply = (job) => {
+    if (!isLoggedIn()) {
+      toast.error("Please login as a job seeker to apply.");
+      navigate("/login");
+      return;
+    }
+    if (getRole() !== "jobseeker") {
+      toast.error("Only job seeker accounts can apply for jobs.");
+      return;
+    }
+    navigate(`/jobseeker/apply-job?jobId=${job._id}`);
+  };
+
   return (
-    <>
-    <div>
-   <div className="h-64 bg-white text-gray-600 flex flex-col justify-center items-center">
-  <h1 className="text-4xl font-semibold mb-4 mt-24">Pricing</h1>
-</div>
-<div
-  className="relative py-20 text-white bg-cover bg-center bg-no-repeat h-[500px]"
-  style={{
-    backgroundImage: "url('widget-testimonial-background-1.jpg')",
-  }}
->
-  <div className="relative z-10 text-center max-w-3xl mx-auto px-4">
-    <h2 className="text-4xl font-semibold mb-4 pt-28">Priced to Hire</h2>
-    <p className="text-lg font-light">
-      Manually create a price table with options for anything you want.<br />
-      Or automatically generate one using WooCommerce Paid Listings.
-    </p>
-  </div>
-</div>
+    <div className="bg-gray-50 min-h-screen">
+      <Toaster position="top-right" />
 
-<div className="bg-gray-100 py-16 px-4">
-  <h2 className="text-4xl font-bold text-center text-gray-900 mb-12">Plans and Pricing</h2>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-green-600 to-green-500 py-16 px-4 text-center text-white">
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Find Your Next Opportunity</h1>
+        <p className="text-green-50">
+          {loading ? "Loading jobs…" : `${jobs.length} open position${jobs.length === 1 ? "" : "s"} waiting for you`}
+        </p>
+      </div>
 
-  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-
-    {/* Small Team Plan */}
-    <div className="bg-white p-8 rounded-2xl shadow hover:shadow-lg transition border-t-4 border-[#5bbc2e]">
-      <h3 className="text-2xl font-semibold text-gray-800 mb-2">Small Team</h3>
-      <p className="text-gray-800 text-xl font-bold">$69.00</p>
-      <p className="text-sm text-gray-500 mb-4">1 job for 60 days</p>
-
-      <ul className="text-sm text-gray-700 space-y-2 mb-6">
-        <li>✓ Post 1 Job</li>
-        <li>✓ Edit Your Job Listings</li>
-        <li>✓ See Job Posting Stats</li>
-        <li>✓ Job Listing Expires in 60 Days</li>
-      </ul>
-
-      <button className="w-full py-2 px-4 bg-[#5bbc2e] text-white rounded hover:bg-green-600 transition">
-        Get Started
-      </button>
-    </div>
-
-    {/* Enterprise Plan */}
-    <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition border-t-4 border-[#5bbc2e]">
-      <h3 className="text-2xl font-semibold text-gray-800 mb-2">Enterprise</h3>
-      <p className="text-gray-800 text-xl font-bold">$199.00</p>
-      <p className="text-sm text-gray-500 mb-4">20 jobs for 190 days</p>
-
-      <ul className="text-sm text-gray-700 space-y-2 mb-6">
-        <li>✓ Post Unlimited Jobs</li>
-        <li>✓ Unlimited Featured Jobs</li>
-        <li>✓ Edit Your Job Listings</li>
-        <li>✓ See Job Posting Stats</li>
-        <li>✓ 24/7 Critical Support</li>
-        <li>✓ Job Listing Expires in 190 Days</li>
-      </ul>
-
-      <button className="w-full py-2 px-4 bg-[#5bbc2e] text-white rounded hover:bg-green-600 transition">
-        Get Started
-      </button>
-    </div>
-
-    {/* Corporate Plan */}
-    <div className="bg-white p-8 rounded-2xl shadow hover:shadow-lg transition border-t-4 border-[#5bbc2e]">
-      <h3 className="text-2xl font-semibold text-gray-800 mb-2">Corporate</h3>
-      <p className="text-gray-800 text-xl font-bold">$199.00</p>
-      <p className="text-sm text-gray-500 mb-4">20 jobs for 190 days</p>
-
-      <ul className="text-sm text-gray-700 space-y-2 mb-6">
-        <li>✓ Post Unlimited Jobs</li>
-        <li>✓ Unlimited Featured Jobs</li>
-        <li>✓ Edit Your Job Listings</li>
-        <li>✓ See Job Posting Stats</li>
-        <li>✓ 24/7 Critical Support</li>
-        <li>✓ Job Listing Expires in 190 Days</li>
-      </ul>
-
-      <button className="w-full py-2 px-4 bg-[#5bbc2e] text-white rounded hover:bg-green-600 transition">
-        Get Started
-      </button>
-    </div>
-    
-  </div>
-</div>
-
-
-    <div className="bg-white py-12 px-4">
-  <h2 className="text-4xl text-center text-gray-600 mb-15">
-    Hundreds of Jobs From All Over India
-  </h2>
-
-  {/* Job List */}
-  <div className="space-y-4 max-w-7xl mx-auto">
-    {[
-      {
-        logo: 'company-logo-sspace-150x150-1-150x150.jpg',
-        title: 'UX Designer',
-        company: 'CodePen',
-        location: 'Bangalore, Karnataka',
-      },
-      {
-        logo: 'company-logo-disqus-150x150-1-150x150.jpg',
-        title: 'Web Designer / Developer',
-        company: 'Disney',
-        location: 'Mumbai, Maharashtra',
-      },
-      {
-        logo: 'listing-codepen-logo-150x150.jpg',
-        title: 'Graphic Designer',
-        company: 'Creative Studio',
-        location: 'Pune, Maharashtra',
-      },
-      {
-        logo: 'company-logo-pinterest-300x300-1-150x150.jpg',
-        title: 'Senior Designer',
-        company: 'Docker',
-        location: 'Hyderabad, Telangana',
-      },
-      {
-        logo: 'company-logo-fitbit-300x300-1-150x150.jpg',
-        title: 'Design Technologist',
-        company: 'Fitbit',
-        location: 'Gurgaon, Haryana',
-      },
-      {
-        logo: 'company-logo-paypal-300x300-1-150x150.jpg',
-        title: 'Front-End Engineer',
-        company: 'PayPal',
-        location: 'Chennai, Tamil Nadu',
-      },
-      {
-        logo: 'ZOHO_New.png',
-        title: 'UI Developer',
-        company: 'Zoho Corp',
-        location: 'Coimbatore, Tamil Nadu',
-      },
-      {
-        logo: 'images.png',
-        title: 'Software Developer',
-        company: 'TCS',
-        location: 'Noida, Uttar Pradesh',
-      },
-      {
-        logo: 'infosys.png',
-        title: 'Product Designer',
-        company: 'Infosys',
-        location: 'Mysore, Karnataka',
-      },
-    ].map((job, index) => (
-      <div
-        key={index}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border-t last:border-b bg-white hover:bg-gray-50 hover:border-l-4 hover:border-[#5bbc2e] transition duration-300"
-      >
-        <div className="flex items-center gap-4">
-          <img
-            src={job.logo}
-            alt="Company logo"
-            className="w-12 h-12 object-contain"
-          />
-          <div>
-            <h4 className="font-semibold text-gray-800">{job.title}</h4>
-            <p className="text-sm text-gray-600">{job.company}</p>
+      {/* Filters */}
+      <div className="max-w-5xl mx-auto px-4 -mt-8">
+        <div className="bg-white rounded-xl shadow-md p-4 flex flex-col md:flex-row gap-3">
+          <div className="flex items-center flex-1 gap-2 border border-gray-200 rounded-lg px-3">
+            <FaSearch className="text-gray-400 flex-shrink-0" />
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="Job title, company, or keyword"
+              className="w-full py-2.5 focus:outline-none text-gray-800"
+            />
           </div>
-        </div>
-        <div className="flex items-center text-gray-700 text-sm gap-3 flex-wrap">
-          <div className="flex items-center gap-1">
-            <svg
-              className="w-4 h-4 text-[#5bbc2e]"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.05 3.05a7 7 0 119.9 9.9l-4.95 4.95-4.95-4.95a7 7 0 010-9.9zm4.95 1.414a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>{job.location}</span>
+          <div className="flex items-center flex-1 gap-2 border border-gray-200 rounded-lg px-3">
+            <FaMapMarkerAlt className="text-gray-400 flex-shrink-0" />
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Location"
+              className="w-full py-2.5 focus:outline-none text-gray-800"
+            />
           </div>
-          <button className="text-[#5bbc2e] hover:underline font-medium">
-            View Job
-          </button>
+          <select
+            value={jobType}
+            onChange={(e) => setJobType(e.target.value)}
+            className="border border-gray-200 rounded-lg px-3 py-2.5 text-gray-600 focus:outline-none md:w-48"
+          >
+            <option value="">All job types</option>
+            <option value="government">Government</option>
+            <option value="private">Private</option>
+          </select>
         </div>
       </div>
-    ))}
-  </div>
 
-  {/* Pagination */}
-  <div className="mt-10 flex justify-center">
-    <button className="px-6 py-2 bg-[#5bbc2e] text-white font-semibold rounded hover:bg-[#4da628] transition">
-      Load More Listings
-    </button>
-  </div>
-</div>
-</div>
-    </>
-  )
-}
+      {/* Job list */}
+      <div className="max-w-5xl mx-auto px-4 py-10">
+        {loading ? (
+          <p className="text-center text-gray-400 py-16">Loading jobs…</p>
+        ) : filteredJobs.length === 0 ? (
+          <div className="text-center text-gray-400 py-16">
+            <FaBriefcase className="text-5xl mx-auto mb-4" />
+            <p className="text-lg">
+              {jobs.length === 0
+                ? "No jobs have been posted yet — check back soon!"
+                : "No jobs match your filters. Try broadening your search."}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredJobs.map((job, index) => (
+              <motion.div
+                key={job._id}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: Math.min(index, 8) * 0.05 }}
+                className="bg-white rounded-xl border border-gray-100 hover:border-green-200 hover:shadow-md transition p-5"
+              >
+                <div className="flex flex-col sm:flex-row justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <span className="w-12 h-12 rounded-lg bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0 text-lg">
+                      <FaBuilding />
+                    </span>
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-lg">{job.title}</h3>
+                      <p className="text-sm text-gray-500">{job.company}</p>
 
-export default Viewjob
+                      <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-600">
+                        <span className="flex items-center gap-1.5">
+                          <FaMapMarkerAlt className="text-green-600" /> {job.location}
+                        </span>
+                        {job.salary && (
+                          <span className="flex items-center gap-1.5">
+                            <FaMoneyBillWave className="text-green-600" /> {job.salary}
+                          </span>
+                        )}
+                        {job.qualification && (
+                          <span className="flex items-center gap-1.5">
+                            <FaGraduationCap className="text-green-600" /> {job.qualification}
+                          </span>
+                        )}
+                        <span className="text-xs bg-gray-100 px-2.5 py-1 rounded-full capitalize">
+                          {job.jobType}
+                        </span>
+                      </div>
+
+                      {job.description && (
+                        <p className="text-sm text-gray-500 mt-3 line-clamp-2">{job.description}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex sm:flex-col justify-end sm:justify-center flex-shrink-0">
+                    <button
+                      onClick={() => handleApply(job)}
+                      className="bg-green-600 text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-green-700 transition whitespace-nowrap"
+                    >
+                      Apply Now
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* CTA for non-members */}
+      {!isLoggedIn() && (
+        <div className="bg-white border-t border-gray-100 py-12 px-4 text-center">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">New here?</h3>
+          <p className="text-gray-500 mb-5">Create a free account to apply and track your applications.</p>
+          <Link
+            to="/register"
+            className="inline-block bg-green-600 text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-green-700 transition"
+          >
+            Register Now
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Viewjob;
