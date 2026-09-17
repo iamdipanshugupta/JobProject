@@ -38,7 +38,7 @@ const FeedbackManagement = () => {
         toast.error(data.message);
       }
     } catch (err) {
-      toast.error("Failed to delete feedback!",err);
+      toast.error("Failed to delete feedback!", err);
     }
   };
 

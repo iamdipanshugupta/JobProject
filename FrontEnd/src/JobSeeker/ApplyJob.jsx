@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { FaMapMarkerAlt, FaBuilding, FaMoneyBillWave, FaGraduationCap, FaBriefcase } from "react-icons/fa";
 import  API_BASE_URL  from "../config/api.js";
@@ -7,9 +7,10 @@ import { getToken, getUserId } from "../utils/auth.js";
 
 const ApplyJob = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [jobs, setJobs] = useState([]);
-  const [jobId, setJobId] = useState("");
+  const [jobId, setJobId] = useState(searchParams.get("jobId") || "");
   const [coverLetter, setCoverLetter] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedResume, setSelectedResume] = useState(null);

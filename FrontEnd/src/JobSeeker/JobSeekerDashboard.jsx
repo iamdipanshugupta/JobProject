@@ -12,7 +12,7 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import API_BASE_URL from "../config/api.js";
-import { getUser, getUserId } from "../utils/auth.js";
+import { getUser, getToken } from "../utils/auth.js";
 
 const greeting = () => {
   const hour = new Date().getHours();
@@ -64,19 +64,16 @@ const ACTIONS = [
 const JobSeekerDashboard = () => {
   const navigate = useNavigate();
   const user = getUser();
-  const jobSeekerId = getUserId();
 
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchApplications = async () => {
-      if (!jobSeekerId) {
-        setLoading(false);
-        return;
-      }
       try {
-        const res = await fetch(`${API_BASE_URL}/applications/my?jobSeekerId=${jobSeekerId}`);
+        const res = await fetch(`${API_BASE_URL}/applications/my`, {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        });
         const data = await res.json();
         if (data.success) setApplications(data.applications || []);
       } catch (err) {
@@ -86,7 +83,7 @@ const JobSeekerDashboard = () => {
       }
     };
     fetchApplications();
-  }, [jobSeekerId]);
+  }, []);
 
   const counts = STAGES.reduce((acc, stage) => {
     acc[stage.key] = applications.filter((a) => a.status === stage.key).length;

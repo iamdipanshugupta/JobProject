@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import {
   FaSearch,
@@ -145,7 +145,7 @@ const Viewjob = () => {
         ) : (
           <div className="space-y-4">
             {filteredJobs.map((job, index) => (
-              <motion.div
+              <Motion.div
                 key={job._id}
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -196,7 +196,7 @@ const Viewjob = () => {
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         )}

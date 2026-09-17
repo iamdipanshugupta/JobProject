@@ -4,7 +4,7 @@ import Footer from "../componants/Footer.jsx";
 const PublicLayout = ({ children }) => (
   <>
     <NavBar />
-    {children}
+    <div className="pt-20">{children}</div>
     <Footer />
   </>
 );

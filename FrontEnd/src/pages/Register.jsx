@@ -64,29 +64,25 @@ const Register = () => {
   };
 
   // Small reusable input with a leading icon and label
-  const Field = ({ icon, label, name, type = "text", placeholder, required }) => {
-    const IconComponent = icon;
-
-    return (
-      <div>
-        <label className="block mb-1.5 text-sm font-medium text-gray-700">
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <div className="relative">
-          <IconComponent className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type={type}
-            name={name}
-            placeholder={placeholder}
-            value={data[name]}
-            onChange={handleChange}
-            required={required}
-            className="w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-          />
-        </div>
+  const Field = ({ icon: Icon, label, name, type = "text", placeholder, required }) => (
+    <div>
+      <label className="block mb-1.5 text-sm font-medium text-gray-700">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <div className="relative">
+        <Icon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <input
+          type={type}
+          name={name}
+          placeholder={placeholder}
+          value={data[name]}
+          onChange={handleChange}
+          required={required}
+          className="w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+        />
       </div>
-    );
-  };
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex">
