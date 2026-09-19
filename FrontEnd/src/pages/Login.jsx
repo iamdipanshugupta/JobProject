@@ -3,7 +3,7 @@ import axios from "axios";
 import { Eye, EyeOff, Mail, Lock, Briefcase, Search, TrendingUp } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
-import { saveAuthData, getToken, getRole } from "../utils/auth.js";
+import { saveAuthData, getToken, getRole, isTokenExpired } from "../utils/auth.js";
 import API_BASE_URL from "../config/api.js";
 
 const Login = () => {
@@ -16,7 +16,7 @@ const Login = () => {
   useEffect(() => {
     const token = getToken();
     const role = getRole();
-    if (token) {
+    if (token && !isTokenExpired()) {
       if (role === "admin") navigate("/admin/dashboard");
       else if (role === "jobseeker") navigate("/jobseeker/dashboard");
     }

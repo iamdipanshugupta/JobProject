@@ -25,4 +25,33 @@ export const getUser     = () => {
   try { return JSON.parse(localStorage.getItem("user")); } catch { return null; }
 };
 
-export const isLoggedIn = () => !!getToken();
+// Decode a JWT's payload without any external library (base64url -> JSON).
+// Returns null if the token is missing or malformed.
+const decodeToken = (token) => {
+  try {
+    const payload = token.split(".")[1];
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const json = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+        .join("")
+    );
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+};
+
+// Checks the token's own "exp" claim against the current time — this is what
+// actually detects an expired session, independent of whether a stale token
+// is still sitting in localStorage.
+export const isTokenExpired = () => {
+  const token = getToken();
+  if (!token) return true;
+  const decoded = decodeToken(token);
+  if (!decoded?.exp) return true;
+  return Date.now() >= decoded.exp * 1000;
+};
+
+export const isLoggedIn = () => !!getToken() && !isTokenExpired();

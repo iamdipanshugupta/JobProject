@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 // Utilities
-import { getRole } from "./utils/auth.js";
+import { getRole, isTokenExpired, clearAuthData } from "./utils/auth.js";
 
 // Layouts
 import PublicLayout from "./Layouts/PublicLayout.jsx";
@@ -47,9 +47,16 @@ import Profile from "./JobSeeker/Profile.jsx";
 // -------------------- Protected Route Guard --------------------
 const ProtectedRoute = ({ children, allowedRole }) => {
   const role = getRole();
+
   if (!role || role !== allowedRole.toLowerCase()) {
     return <Navigate to="/login" replace />;
   }
+
+  if (isTokenExpired()) {
+    clearAuthData();
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
 };
 

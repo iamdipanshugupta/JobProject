@@ -1,143 +1,98 @@
-# 🏢 Job Portal — Full Stack Web Application
+# 🏢 Jobify — Full Stack Job Portal
 
-A complete **Full Stack Job Portal** built with **React.js**, **Node.js**, **Express.js**, and **MongoDB**. The platform supports three types of users — **Public visitors**, **Job Seekers**, and **Admins** — each with their own dedicated interface and features.
+A complete **Full Stack Job Portal** built with **React.js**, **Node.js**, **Express.js**, and **MongoDB**. The platform supports three kinds of users — **public visitors**, **job seekers**, and **admins** — each with their own protected interface.
 
 > 🔗 **Live Demo:** https://job-project-one.vercel.app
- 📁 **GitHub:** https://github.com/iamdipanshugupta/JobProject/tree/main
+> 📁 **GitHub:** https://github.com/iamdipanshugupta/JobProject
 
 ---
 
 ## ✨ Features Overview
 
 ### 🌐 Public
-- Browse available jobs without logging in
+- Browse and filter live jobs without logging in (keyword, location, category, job type)
 - Submit enquiries / contact form
-- View image gallery and services
+- View services and image gallery
 
 ### 👤 Job Seeker
-- Register & login with secure JWT authentication
-- Upload resume during registration
-- Search and filter jobs by location, type, qualification
-- Apply for jobs with cover letter
-- Track application status
-- View declared results
+- Register & log in with JWT authentication
+- Maintain a profile — qualifications, experience, skills, resume
+- Search and filter jobs; see full job detail (company, location, **salary**, category) before applying
+- Apply for jobs with a resume and optional cover letter
+- Track application status through a visual pipeline (Applied → Shortlisted → Selected/Rejected)
 - Submit feedback and complaints
 
 ### 🛡️ Admin
-- Full dashboard with stats overview
-- Manage jobs (create, edit, delete)
-- Review and update application statuses
-- Declare job results per candidate
-- Block / approve job seekers
-- Manage complaints and feedback
-- View user login history
-- Handle enquiries
+- Dashboard with live stats (jobs, applications, complaints, feedback, users) and a real recent-activity feed
+- Manage jobs — create, edit, delete, with salary and category
+- Review applications: shortlist, select, or reject candidates; download resumes; read cover letters
+- Declare final results per job (writes to the same record job seekers see — not a separate disconnected list)
+- Approve / block job seekers and users
+- Manage complaints, feedback, and enquiries
+- Every admin-only endpoint requires a valid admin JWT — nothing sensitive is exposed publicly
 
 ---
 
 ## 🚀 Tech Stack
 
 ### Frontend
-| Technology        | Purpose                          |
-|-------------------|----------------------------------|
-| React.js 18       | UI library                       |
-| React Router v6   | Routing & protected routes       |
-| Axios             | API calls                        |
-| Tailwind CSS      | Styling                          |
-| DaisyUI           | UI components                    |
-| Framer Motion     | Animations                       |
-| React Hot Toast   | Notifications                    |
-| Vite              | Build tool                       |
+| Technology       | Purpose                     |
+|-------------------|------------------------------|
+| React.js 18       | UI library                   |
+| React Router v6   | Routing & protected routes    |
+| Axios / fetch     | API calls                     |
+| Tailwind CSS 4    | Styling                       |
+| DaisyUI           | UI components                 |
+| Framer Motion     | Animations                    |
+| React Hot Toast   | Notifications                 |
+| React Icons / Lucide | Icons                       |
+| Vite              | Build tool                    |
 
 ### Backend
-| Technology   | Purpose                          |
+| Technology   | Purpose                       |
 |--------------|----------------------------------|
-| Node.js      | JavaScript runtime               |
-| Express.js   | Web framework                    |
-| MongoDB       | Database                         |
-| Mongoose     | ODM                              |
-| JWT           | Authentication                   |
-| Bcryptjs     | Password hashing                 |
-| Multer       | File uploads (resumes)           |
-| Nodemailer   | Password reset emails            |
+| Node.js      | JavaScript runtime                |
+| Express.js   | Web framework                     |
+| MongoDB      | Database                          |
+| Mongoose     | ODM                                |
+| JWT          | Authentication & role-based access|
+| Bcryptjs     | Password hashing                  |
+| Multer       | Resume uploads                    |
+| Brevo API    | Password-reset emails             |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-job-portal/
+JobProject/
 │
-├── 📂 server/                         # Backend (Node.js + Express)
-│   ├── src/
-│   │   ├── app.js                     # Entry point
-│   │   ├── config/
-│   │   │   └── db.js                  # MongoDB connection
-│   │   ├── middleware/
-│   │   │   └── auth.middleware.js     # JWT verification
-│   │   ├── models/
-│   │   │   ├── user.model.js
-│   │   │   ├── job.model.js
-│   │   │   ├── application.model.js
-│   │   │   ├── result.model.js
-│   │   │   ├── complain.model.js
-│   │   │   ├── feedback.model.js
-│   │   │   └── enquiry.model.js
-│   │   ├── controllers/
-│   │   │   ├── auth.controller.js
-│   │   │   ├── user.controller.js
-│   │   │   ├── job.controller.js
-│   │   │   ├── application.controller.js
-│   │   │   ├── result.controller.js
-│   │   │   ├── complain.controller.js
-│   │   │   ├── feedback.controller.js
-│   │   │   └── admin.controller.js
-│   │   ├── routes/
-│   │   │   ├── auth.routes.js
-│   │   │   ├── user.routes.js
-│   │   │   ├── job.routes.js
-│   │   │   ├── application.routes.js
-│   │   │   ├── result.routes.js
-│   │   │   ├── complain.routes.js
-│   │   │   ├── feedback.routes.js
-│   │   │   └── admin.routes.js
-│   │   └── utils/
-│   │       ├── sendEmail.js
-│   │       └── upload.js
+├── 📂 Server/                          # Backend (Node.js + Express)
+│   ├── index.js                        # Entry point — routes, error handling
+│   ├── config/db.js
+│   ├── middleware/auth.middleware.js   # verifyToken + isAdmin
+│   ├── models/                         # user, job, application, result, complain, feedback, enquiry
+│   ├── controllers/
+│   ├── routes/                         # auth, user, job, application, result, complain, feedback, admin, jobseeker
+│   ├── scripts/                        # createAdmin.js, hashPasswords.js
+│   ├── utils/                          # sendEmail.js (Brevo), upload.js (Multer)
 │   ├── uploads/resumes/
-│   ├── .env.example
-│   └── package.json
+│   └── .env.example
 │
-└── 📂 frontend/                       # Frontend (React.js + Vite)
+└── 📂 FrontEnd/                        # Frontend (React.js + Vite)
     ├── src/
-    │   ├── App.jsx                    # Root routes + ProtectedRoute
-    │   ├── main.jsx
-    │   ├── config/
-    │   │   └── api.js                 # API base URL config
-    │   ├── utils/
-    │   │   └── auth.js                # Auth localStorage helpers
-    │   ├── components/
-    │   │   ├── layout/
-    │   │   │   ├── PublicLayout.jsx
-    │   │   │   ├── AdminLayout.jsx
-    │   │   │   └── JobSeekerLayout.jsx
-    │   │   ├── common/
-    │   │   │   ├── NavBar.jsx
-    │   │   │   ├── Footer.jsx
-    │   │   │   └── Testimonials.jsx
-    │   │   ├── admin/
-    │   │   │   ├── AdminSidebar.jsx
-    │   │   │   └── AdminNavbar.jsx
-    │   │   └── jobseeker/
-    │   │       ├── JobSeekerSidebar.jsx
-    │   │       └── JobSeekerNavbar.jsx
-    │   └── pages/
-    │       ├── auth/          Login, Register, ForgotPassword, ResetPassword
-    │       ├── public/        Home, Services, Enquiry, ImageGallery, ViewJob
-    │       ├── admin/         Dashboard, Jobs, Results, Feedback, Complaints...
-    │       └── jobseeker/     Dashboard, SearchJob, ApplyJob, Results, Feedback...
-    └── package.json
+    │   ├── App.jsx                     # Root routes + ProtectedRoute
+    │   ├── config/api.js                # API_BASE_URL
+    │   ├── utils/                       # auth.js, usePagination.js
+    │   ├── componants/                  # NavBar, Footer, AdminSidebar, AdminNavbar, Pagination, Testimonials
+    │   ├── Layouts/                     # PublicLayout, AdminLayout, JobSeekerLayout
+    │   ├── pages/                       # Home, Services, Enquiry, Imagegallery, Viewjob, Login, Register, ForgotPassword, ResetPassword
+    │   ├── Admin/                       # Dashboard, JobManagement, ResultManagement, ManageApplications, ...
+    │   └── JobSeeker/                   # Dashboard, SearchJob, ApplyJob, Profile, Results, Feedback, Complain
+    └── .env.example
 ```
+
+See `Server/README.md` and `FrontEnd/README.md` for full endpoint and route references.
 
 ---
 
@@ -145,180 +100,110 @@ job-portal/
 
 ### Prerequisites
 - Node.js v18+
-- MongoDB Atlas account (or local MongoDB)
-- npm
-
----
+- A MongoDB connection string (Atlas or local)
+- A Brevo account + API key (for password-reset emails)
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/job-portal.git
-cd job-portal
+git clone https://github.com/iamdipanshugupta/JobProject.git
+cd JobProject
 ```
 
----
-
-### 2. Setup Backend
+### 2. Backend
 ```bash
-cd server
+cd Server
 npm install
 cp .env.example .env
 ```
-
-Edit `.env`:
+Fill in `.env`:
 ```env
-MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/
-JWT_SECRET=your_secret_key
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
 PORT=8080
-FRONTEND_URL=http://localhost:5173
-EMAIL_HOST=smtp.zoho.com
-EMAIL_PORT=465
-EMAIL_USER=your@email.com
-EMAIL_PASS=your_app_password
+CLIENT_URL=http://localhost:5173
+BREVO_API_KEY=your_brevo_api_key
+BREVO_FROM_EMAIL=your_sender_email
+BREVO_FROM_NAME=your_sender_name
+```
+```bash
+node index.js       # Starts on http://localhost:8080
 ```
 
+### 3. Frontend
 ```bash
-npm run dev        # Starts on http://localhost:8080
-```
-
----
-
-### 3. Setup Frontend
-```bash
-cd ../frontend
+cd ../FrontEnd
 npm install
-npm run dev        # Starts on http://localhost:5173
+cp .env.example .env
+```
+```env
+VITE_BACKEND_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8080/api
+```
+```bash
+npm run dev          # Starts on http://localhost:5173
 ```
 
 ---
 
-## 📡 API Reference
+## 🔐 Security Model (summary)
 
-### 🔐 Auth — `/api/auth`
-| Method | Endpoint                 | Description              |
-|--------|--------------------------|--------------------------|
-| POST   | `/register`              | Register new user        |
-| POST   | `/login`                 | Login                    |
-| POST   | `/forgot-password`       | Send reset email         |
-| POST   | `/reset-password/:token` | Reset password           |
-
-### 💼 Jobs — `/api/jobs`
-| Method | Endpoint | Description          |
-|--------|----------|----------------------|
-| GET    | `/`      | Get all jobs (filter)|
-| POST   | `/`      | Create job           |
-| PUT    | `/:id`   | Update job           |
-| DELETE | `/:id`   | Delete job           |
-
-### 📋 Applications — `/api/applications`
-| Method | Endpoint      | Description               |
-|--------|---------------|---------------------------|
-| POST   | `/`           | Apply for job             |
-| GET    | `/my`         | My applications           |
-| GET    | `/all`        | All applications (admin)  |
-| PUT    | `/:id/status` | Update status (admin)     |
-| DELETE | `/:id`        | Delete application        |
-
-### 📊 Results — `/api/results`
-| Method | Endpoint             | Description         |
-|--------|----------------------|---------------------|
-| PUT    | `/`                  | Create/update result|
-| GET    | `/user/:id`          | Results by user     |
-| GET    | `/:jobId`            | Results by job      |
-
-### 🛡️ Admin — `/api/admin`
-| Method | Endpoint              | Description          |
-|--------|-----------------------|----------------------|
-| GET    | `/users`              | All users            |
-| GET    | `/jobseekers`         | All job seekers      |
-| PATCH  | `/users/:id/status`   | Block / approve user |
-| GET    | `/resume/:filename`   | Download resume      |
-
----
-
-## 🗄️ Database Schema Summary
-
-```
-User         → username, email, password, role, status, skills, resumeUrl, jobId
-Job          → title, company, location, qualification, experience, jobType
-Application  → jobId (ref), jobSeekerId (ref), status, resumeUrl, appliedAt
-Result       → jobId (ref), jobSeekerId (ref), status
-Complain     → subject, description, submittedBy, status
-Feedback     → userId (ref), role, message
-Enquiry      → name, email, number, message
-```
-
----
-
-## 🔐 Auth Flow
-
-```
-Login (/api/auth/login)
-    ↓
-Verify email + bcrypt password check
-    ↓
-Return JWT token (1 day expiry) + user object
-    ↓
-Frontend saves token + role to localStorage
-    ↓
-ProtectedRoute checks role in App.jsx
-    ↓
-Admin  → /admin/dashboard
-Seeker → /jobseeker/dashboard
-    ↓
-API calls include: Authorization: Bearer <token>
-    ↓
-auth.middleware.js verifies token on protected routes
-```
+- **Public by design:** browsing jobs, submitting an enquiry or complaint, login/register/password-reset.
+- **Authenticated (any logged-in user):** viewing/editing your own profile, applying for a job, viewing your own applications, submitting feedback.
+- **Admin-only:** creating/editing/deleting jobs, viewing all users/applications/complaints/feedback, changing application status, downloading resumes.
+- **Identity is never trusted from the client.** Actions like "apply for a job" or "view my applications" resolve the job seeker's identity from their verified JWT server-side — a request cannot act on behalf of a different user by passing a different ID.
+- All errors are returned as JSON (`{ success, message }`) via a global error handler — never an HTML error page.
 
 ---
 
 ## 🚢 Deployment
 
-### Frontend → Vercel
+### Frontend → Vercel / Netlify
 ```bash
-cd frontend
-npm run build
-# Connect GitHub repo to Vercel — auto deploys
+cd FrontEnd
+npm run build      # outputs dist/
 ```
+Set `VITE_API_BASE_URL` to your deployed backend URL in the hosting provider's environment variables before building.
 
 ### Backend → Render / Railway
-```bash
-# Set all .env variables in dashboard
-# Start command: npm start
-# Root directory: server/
-```
+- Root directory: `Server/`
+- Start command: `node index.js`
+- Set all `.env` variables (see above) in the hosting dashboard.
+- Note: on many free-tier hosts the filesystem is **ephemeral** — uploaded resumes in `uploads/resumes/` will be lost on redeploy/restart. For production use, move resume storage to a persistent service (e.g. Cloudinary, S3) rather than local disk.
 
-> ⚠️ After deploying backend, update `src/config/api.js` in frontend with your live API URL.
+> After deploying the backend, update `VITE_API_BASE_URL` in the frontend's environment and rebuild/redeploy.
 
 ---
 
-## 🗺️ Frontend Route Map
+## 🗺️ Full Route Map
 
-| Route                     | Access       | Page                    |
-|---------------------------|--------------|-------------------------|
-| `/`                       | Public       | Home                    |
-| `/services`               | Public       | Services                |
-| `/enquiry`                | Public       | Enquiry Form            |
-| `/viewjob`                | Public       | Browse Jobs             |
-| `/login`                  | Public       | Login                   |
-| `/register`               | Public       | Register                |
-| `/forgot-password`        | Public       | Forgot Password         |
-| `/reset-password/:token`  | Public       | Reset Password          |
-| `/admin/dashboard`        | Admin only   | Admin Dashboard         |
-| `/admin/jobs`             | Admin only   | Job Management          |
-| `/admin/applications`     | Admin only   | Manage Applications     |
-| `/admin/results`          | Admin only   | Result Management       |
-| `/admin/jobseekers`       | Admin only   | Job Seeker Management   |
-| `/admin/complaints`       | Admin only   | Complaint Management    |
-| `/admin/feedback`         | Admin only   | Feedback Management     |
-| `/admin/enquiries`        | Admin only   | Enquiry Management      |
-| `/jobseeker/dashboard`    | Seeker only  | Dashboard               |
-| `/jobseeker/search-job`   | Seeker only  | Search Jobs             |
-| `/jobseeker/apply-job`    | Seeker only  | Apply For Job           |
-| `/jobseeker/results`      | Seeker only  | View Results            |
-| `/jobseeker/feedback`     | Seeker only  | Submit Feedback         |
-| `/jobseeker/complain`     | Seeker only  | Submit Complaint        |
+| Route                       | Access       | Page                    |
+|------------------------------|--------------|--------------------------|
+| `/`                          | Public       | Home                     |
+| `/services`                  | Public       | Services                 |
+| `/enquiry`                   | Public       | Enquiry Form             |
+| `/imagegallery`               | Public       | Image Gallery            |
+| `/viewjob`                    | Public       | Browse Jobs              |
+| `/login`                      | Public       | Login                    |
+| `/register`                   | Public       | Register                 |
+| `/forgot-password`            | Public       | Forgot Password          |
+| `/reset-password/:token`      | Public       | Reset Password           |
+| `/admin/dashboard`            | Admin only   | Dashboard                |
+| `/admin/jobs`                 | Admin only   | Job Management           |
+| `/admin/applications`         | Admin only   | Manage Applications      |
+| `/admin/results`              | Admin only   | Result Management        |
+| `/admin/jobseekers`           | Admin only   | Job Seeker Management    |
+| `/admin/complaints`           | Admin only   | Complaint Management     |
+| `/admin/feedback`             | Admin only   | Feedback Management      |
+| `/admin/enquiries`            | Admin only   | Enquiry Management       |
+| `/admin/login-info`           | Admin only   | Login Info (Users)       |
+| `/admin/users`                | Admin only   | Admin Users              |
+| `/jobseeker/dashboard`        | Seeker only  | Dashboard                |
+| `/jobseeker/search-job`       | Seeker only  | Search Jobs              |
+| `/jobseeker/apply-job`        | Seeker only  | Apply For Job            |
+| `/jobseeker/profile`          | Seeker only  | My Profile               |
+| `/jobseeker/results`          | Seeker only  | View Results             |
+| `/jobseeker/feedback`         | Seeker only  | Submit Feedback          |
+| `/jobseeker/complain`         | Seeker only  | Submit Complaint         |
 
 ---
 
@@ -327,13 +212,10 @@ npm run build
 **Dipanshu**
 - 🐙 GitHub: https://github.com/iamdipanshugupta
 - 💼 LinkedIn: https://www.linkedin.com/in/dipanshu-kumar-sah-08302b331/
-- 📧 Email: kumardipanshu983542@gmail.com
-
----
 
 ## 📄 License
 
-This project is licensed under the **ISC License** — free to use and modify.
+ISC License — free to use and modify.
 
 ---
 
